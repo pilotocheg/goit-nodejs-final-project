@@ -26,7 +26,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user1@example.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"name\": \"User One\",\n  \"email\": \"user1@example.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
@@ -143,6 +143,86 @@
               "raw": "{{baseUrl}}/areas",
               "host": ["{{baseUrl}}"],
               "path": ["areas"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Following",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/following",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "following"]
+            }
+          }
+        },
+        {
+          "name": "Get User Subscribers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/:profileUserId/subscribers",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":profileUserId", "subscribers"],
+              "variable": [
+                {
+                  "key": "profileUserId",
+                  "value": "",
+                  "description": "ID of the user whose subscribers to retrieve"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Follow User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/follow",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "follow"]
+            }
+          }
+        },
+        {
+          "name": "Unfollow User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/:targetUserId/follow",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":targetUserId", "follow"],
+              "variable": [
+                {
+                  "key": "targetUserId",
+                  "value": "",
+                  "description": "ID of the user to unfollow"
+                }
+              ]
             }
           }
         }

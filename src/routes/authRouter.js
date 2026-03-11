@@ -8,14 +8,14 @@ import {
   updateUserAvatar,
 } from "../controllers/authControllers.js";
 import validateBody from "../helpers/validateBody.js";
-import { userCredentialsSchema } from "../schemas/authSchemas.js";
+import { registerSchema, loginSchema } from "../schemas/authSchemas.js";
 import authenticate from "../middlewares/authenticate.js";
 import upload from "../middlewares/upload.js";
 
 const authRouter = express.Router();
 
-authRouter.post("/register", validateBody(userCredentialsSchema), registerUser);
-authRouter.post("/login", validateBody(userCredentialsSchema), loginUser);
+authRouter.post("/register", validateBody(registerSchema), registerUser);
+authRouter.post("/login", validateBody(loginSchema), loginUser);
 
 // routes with auth check
 authRouter.use(authenticate);

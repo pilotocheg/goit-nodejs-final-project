@@ -4,6 +4,10 @@ import sequelize from "../sequelize.js";
 const Category = sequelize.define(
   "category",
   {
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -16,4 +20,3 @@ const Category = sequelize.define(
 Category.sync();
 
 export default Category;
-
