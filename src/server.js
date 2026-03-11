@@ -7,6 +7,7 @@ import "express-async-errors";
 import errorHandler from "./middlewares/errorHandler.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import authRouter from "./routes/authRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 
 app.use(notFoundHandler);
 
