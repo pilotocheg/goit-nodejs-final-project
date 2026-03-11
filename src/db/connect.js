@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "./sequelize.js";
 import "./associations.js";
 import UserFollows from "./models/UserFollows.js";
+import Ingredient from "./models/Ingredient.js";
 
 async function connectDatabase() {
   try {
@@ -14,6 +15,7 @@ async function connectDatabase() {
     // UserFollows.rawAttributes.followingId.type = DataTypes.STRING;
 
     // await UserFollows.sync({ alter: true });
+    await Ingredient.sync();
     console.log("Database connection successful");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
