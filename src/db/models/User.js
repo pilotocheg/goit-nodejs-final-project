@@ -5,9 +5,11 @@ import {
   emailValidationPattern,
 } from "../../constants/validation.js";
 
-// TODO: update user model
-
 const User = sequelize.define("user", {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -34,6 +36,6 @@ const User = sequelize.define("user", {
 });
 
 // uncomment to sync if the model above was updated
-User.sync({ force: true });
+// User.sync({ alter: true });
 
 export default User;
