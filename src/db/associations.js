@@ -13,3 +13,7 @@ User.belongsToMany(User, {
   foreignKey: "followerId",
   otherKey: "followingId",
 });
+
+// TODO (Recipe): when Recipe model exists uncomment the relation
+// User.hasMany(Recipe, { foreignKey: "userId" });
+// Then you can use user.getRecipes(), count, and preview image URLs for followers list.

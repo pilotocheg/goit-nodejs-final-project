@@ -5,8 +5,6 @@ import {
   emailValidationPattern,
 } from "../../constants/validation.js";
 
-// TODO: update user model
-
 const User = sequelize.define("user", {
   name: {
     type: DataTypes.STRING,
@@ -37,11 +35,7 @@ const User = sequelize.define("user", {
   avatarURL: DataTypes.STRING,
 });
 
-// TODO (Recipe): when Recipe model exists, add in db/associations.js:
-//   User.hasMany(Recipe, { foreignKey: "userId" });
-// Then you can use user.getRecipes(), count, and preview image URLs for followers list.
-
 // uncomment to sync if the model above was updated
-User.sync({ alter: true });
+// User.sync({ alter: true });
 
 export default User;

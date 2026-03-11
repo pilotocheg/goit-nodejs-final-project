@@ -9,10 +9,11 @@ async function connectDatabase() {
 
     // Associations overwrite UserFollows FK types to match User.id (e.g. INTEGER).
     // Our DB has users.id as VARCHAR, so force STRING back before sync.
-    UserFollows.rawAttributes.followerId.type = DataTypes.STRING;
-    UserFollows.rawAttributes.followingId.type = DataTypes.STRING;
+    // Note: uncomment when you need to sync it again
+    // UserFollows.rawAttributes.followerId.type = DataTypes.STRING;
+    // UserFollows.rawAttributes.followingId.type = DataTypes.STRING;
 
-    await UserFollows.sync({ alter: true });
+    // await UserFollows.sync({ alter: true });
     console.log("Database connection successful");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
