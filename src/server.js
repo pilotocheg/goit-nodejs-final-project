@@ -10,6 +10,7 @@ import authRouter from "./routes/authRouter.js";
 import categoryRouter from "./routes/categoryRouter.js";
 import areaRouter from "./routes/areaRouter.js";
 import usersRouter from "./routes/usersRouter.js";
+import testimonialRouter from "./routes/testimonialRouter.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/areas", areaRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/testimonials", testimonialRouter);
 
 app.use(notFoundHandler);
 

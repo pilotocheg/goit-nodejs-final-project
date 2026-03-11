@@ -145,6 +145,17 @@
               "path": ["areas"]
             }
           }
+        },
+        {
+          "name": "Get All Testimonials",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/testimonials",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials"]
+            }
+          }
         }
       ]
     }
