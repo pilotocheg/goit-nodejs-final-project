@@ -137,7 +137,7 @@ export const getUserData = async (userId, isCurrentUser) => {
   });
 
   if (!user) {
-    return new HttpError(404, "User not found");
+    throw new HttpError(404, "User not found");
   }
 
   return user;
