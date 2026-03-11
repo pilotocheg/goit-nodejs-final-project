@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { DataTypes } from "sequelize";
 import sequelize from "../sequelize.js";
 import {
@@ -5,10 +6,19 @@ import {
   emailValidationPattern,
 } from "../../constants/validation.js";
 
+const generateShortId = () => crypto.randomBytes(12).toString("hex");
+
 const User = sequelize.define("user", {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: generateShortId,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    defaultValue: "Unnamed User",
   },
   password: {
     type: DataTypes.STRING,
