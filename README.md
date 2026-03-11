@@ -30,7 +30,6 @@ REST API backend for the GoIT Node.js course final project. Provides user authen
 2. **Environment**
 
    Copy `.env.example` to `.env` and set:
-
    - `DB_DIALECT` — `postgres`
    - `DB_HOST` — PostgreSQL host (e.g. `localhost`)
    - `DB_PORT` — PostgreSQL port (e.g. `5432`)
@@ -57,15 +56,22 @@ REST API backend for the GoIT Node.js course final project. Provides user authen
 
 Base path for auth: **`/api/auth`**
 
-| Method | Endpoint           | Auth | Description              |
-|--------|--------------------|------|--------------------------|
-| POST   | `/register`        | No   | Register (email, password) |
-| POST   | `/login`           | No   | Login, returns user + token |
-| GET    | `/current`         | Yes  | Current user profile     |
-| POST   | `/logout`          | Yes  | Logout (invalidate token) |
-| PATCH  | `/avatars`         | Yes  | Upload avatar (multipart, field: `avatar`) |
+| Method | Endpoint    | Auth | Description                                |
+| ------ | ----------- | ---- | ------------------------------------------ |
+| POST   | `/register` | No   | Register (email, password)                 |
+| POST   | `/login`    | No   | Login, returns user + token                |
+| GET    | `/current`  | Yes  | Current user profile                       |
+| POST   | `/logout`   | Yes  | Logout (invalidate token)                  |
+| PATCH  | `/avatars`  | Yes  | Upload avatar (multipart, field: `avatar`) |
 
 Protected routes require header: `Authorization: Bearer <token>`.
+
+Public routes:
+
+| Method | Endpoint          | Auth | Description                |
+| ------ | ----------------- | ---- | -------------------------- |
+| GET    | `/api/categories` | No   | List all recipe categories |
+| GET    | `/api/areas`      | No   | List all recipe areas      |
 
 ## Scripts
 

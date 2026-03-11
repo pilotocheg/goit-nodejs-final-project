@@ -1,4 +1,6 @@
 import User from "./models/User.js";
+import Category from "./models/Category.js";
+import Area from "./models/Area.js";
 import UserFollows from "./models/UserFollows.js";
 
 User.belongsToMany(User, {
