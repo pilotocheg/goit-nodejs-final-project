@@ -16,6 +16,4 @@ const Ingredient = sequelize.define("ingredient", {
   },
 });
 
-// Uncomment to create/update table: Ingredient.sync({ alter: true });
-
 export default Ingredient;
