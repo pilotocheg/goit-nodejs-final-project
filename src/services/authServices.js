@@ -7,18 +7,20 @@ import { comparePassword, hashPassword } from "../helpers/hash.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const getUserClientData = (dbUser) => ({
+  name: dbUser.name,
   email: dbUser.email,
   avatarURL: dbUser.avatarURL,
 });
 
 export const findUser = (where) => User.findOne({ where });
 
-export const createUser = async ({ password, email }) => {
+export const createUser = async ({ name, password, email }) => {
   const hashedPassword = await hashPassword(password);
 
   const avatarURL = gravatar.url(email, { protocol: "https", s: "200" });
 
   const newUser = await User.create({
+    name,
     email,
     password: hashedPassword,
     avatarURL,
