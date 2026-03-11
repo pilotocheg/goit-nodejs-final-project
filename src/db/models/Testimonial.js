@@ -15,11 +15,9 @@ const Testimonial = sequelize.define(
       allowNull: false,
     },
   },
-  { timestamps: false }
+  { timestamps: false },
 );
 
-Testimonial.belongsTo(User, { as: "owner", foreignKey: "owner_id" });
-
-Testimonial.sync();
+// Testimonial.sync();
 
 export default Testimonial;

@@ -14,9 +14,9 @@ const Category = sequelize.define(
       unique: true,
     },
   },
-  { timestamps: false }
+  { timestamps: false },
 );
 
-Category.sync();
+// Category.sync();
 
 export default Category;
