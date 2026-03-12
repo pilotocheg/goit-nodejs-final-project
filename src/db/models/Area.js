@@ -14,9 +14,9 @@ const Area = sequelize.define(
       unique: true,
     },
   },
-  { timestamps: false }
+  { timestamps: false },
 );
 
-Area.sync();
+// Area.sync();
 
 export default Area;

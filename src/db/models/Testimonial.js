@@ -1,22 +1,23 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../sequelize.js";
+import User from "./User.js";
 
-const Category = sequelize.define(
-  "category",
+const Testimonial = sequelize.define(
+  "testimonial",
   {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+    },
+    testimonial: {
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
   },
   { timestamps: false },
 );
 
-// Category.sync();
+// Testimonial.sync();
 
-export default Category;
+export default Testimonial;

@@ -3,7 +3,25 @@ import {
   getFollowing,
   followUser,
   unfollowUser,
+  updateUserAvatar,
+  getUserData,
 } from "../services/usersService.js";
+
+export const getCurrentUser = async (req, res) => {
+  const user = await getUserData(req.user.id, true);
+  res.json(user);
+};
+
+export const getUser = async (req, res) => {
+  const user = await getUserData(req.params.userId);
+  res.json(user);
+};
+
+export const updateUserAvatarController = async (req, res) => {
+  const { user, file } = req;
+  const avatarURL = await updateUserAvatar(user, file);
+  return res.json({ avatarURL });
+};
 
 export const getMySubscribers = async (req, res) => {
   const { profileUserId } = req.params;

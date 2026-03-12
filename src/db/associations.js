@@ -2,6 +2,7 @@ import User from "./models/User.js";
 import Category from "./models/Category.js";
 import Area from "./models/Area.js";
 import UserFollows from "./models/UserFollows.js";
+import Testimonial from "./models/Testimonial.js";
 
 User.belongsToMany(User, {
   through: UserFollows,
@@ -15,6 +16,8 @@ User.belongsToMany(User, {
   foreignKey: "followerId",
   otherKey: "followingId",
 });
+
+Testimonial.belongsTo(User, { as: "owner", foreignKey: "owner_id" });
 
 // TODO (Recipe): when Recipe model exists uncomment the relation
 // User.hasMany(Recipe, { foreignKey: "userId" });
