@@ -238,6 +238,399 @@
           }
         }
       ]
+    },
+    {
+      "name": "Recipe",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Test Recipe",
+                  "type": "text",
+                  "uuid": "25b929d7-f16f-46da-9642-bb90495b0981"
+                },
+                {
+                  "key": "category",
+                  "value": "Desert",
+                  "type": "text"
+                },
+                {
+                  "key": "area",
+                  "value": "Ukrainian",
+                  "type": "text"
+                },
+                {
+                  "key": "instructions",
+                  "value": "Test instructions",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Test description",
+                  "type": "text"
+                },
+                {
+                  "key": "preview",
+                  "value": "Test preview",
+                  "type": "text",
+                  "uuid": "4bbd7cd8-71b6-4102-b6f5-a883b25082b1"
+                },
+                {
+                  "key": "time",
+                  "value": "30",
+                  "type": "text",
+                  "uuid": "547babe3-3d78-4826-8a59-abaee6265228"
+                },
+                {
+                  "key": "ingredients",
+                  "value": " [{\"ingredientId\":\"650d5e4f1b2c3d4e5f678901\",\"measure\":\"1 cup\"}]",
+                  "type": "text",
+                  "uuid": "6c5a6621-cbc4-4035-ae88-caee1babd9fa"
+                },
+                {
+                  "key": "thumb",
+                  "type": "file",
+                  "uuid": "c7142089-16b4-4b56-b82b-78711dab557b",
+                  "src": "/C:/Users/zahar/OneDrive/Pictures/133910163092165841.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "LhS7VNWTglGwpa5tgdxw0LU7"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my own recipes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/own",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "own"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "recipe details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "7SWfLYT0SsKhFo1s0PIci8sb"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search all recipes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search by category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search?category=Desert",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Desert"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search by area",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search?area=Ukrainian",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "area",
+                  "value": "Ukrainian"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search by ingredient",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search?ingredient=sugar&page=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "ingredient",
+                  "value": "sugar"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search by сategory and area",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search?category=Breakfast&area=Ukrainian",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Breakfast"
+                },
+                {
+                  "key": "area",
+                  "value": "Ukrainian"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "popular",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/popular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "popular"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "user add recipt to favorite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/favorites/:recipeId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "favorites",
+                ":recipeId"
+              ],
+              "variable": [
+                {
+                  "key": "recipeId",
+                  "value": "EQi0xUECN2bUGQV6LqYMyOyu"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get favorites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/favorites",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "favorites"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "remove favorites",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/favorites/:recipeId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "favorites",
+                ":recipeId"
+              ],
+              "variable": [
+                {
+                  "key": "recipeId",
+                  "value": "wl4PASMKkXYLL1xCReSH6F9M"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

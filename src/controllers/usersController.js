@@ -4,6 +4,7 @@ import {
   followUser,
   unfollowUser,
 } from "../services/usersService.js";
+import * as favoriteServices from "../services/favoriteServices.js";
 
 export const getMySubscribers = async (req, res) => {
   const { profileUserId } = req.params;
@@ -25,5 +26,22 @@ export const followUserHandler = async (req, res) => {
 export const unfollowUserHandler = async (req, res) => {
   const { targetUserId } = req.params;
   const result = await unfollowUser(req.user.id, targetUserId);
+  res.json(result);
+};
+
+export const getFavoritesHandler = async (req, res) => {
+  const favorites = await favoriteServices.getFavorites(req.user.id);
+  res.json(favorites);
+};
+
+export const addToFavoritesHandler = async (req, res) => {
+  const { recipeId } = req.params;
+  await favoriteServices.addToFavorites(req.user.id, recipeId);
+  res.status(201).json({ message: "Added to favorites" });
+};
+
+export const removeFromFavoritesHandler = async (req, res) => {
+  const { recipeId } = req.params;
+  const result = await favoriteServices.removeFromFavorites(req.user.id, recipeId);
   res.json(result);
 };
