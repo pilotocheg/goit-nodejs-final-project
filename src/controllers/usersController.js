@@ -3,8 +3,26 @@ import {
   getFollowing,
   followUser,
   unfollowUser,
+  updateUserAvatar,
+  getUserData,
 } from "../services/usersService.js";
 import * as favoriteServices from "../services/favoriteServices.js";
+
+export const getCurrentUser = async (req, res) => {
+  const user = await getUserData(req.user.id, true);
+  res.json(user);
+};
+
+export const getUser = async (req, res) => {
+  const user = await getUserData(req.params.userId);
+  res.json(user);
+};
+
+export const updateUserAvatarController = async (req, res) => {
+  const { user, file } = req;
+  const avatarURL = await updateUserAvatar(user, file);
+  return res.json({ avatarURL });
+};
 
 export const getMySubscribers = async (req, res) => {
   const { profileUserId } = req.params;
@@ -44,4 +62,4 @@ export const removeFromFavoritesHandler = async (req, res) => {
   const { recipeId } = req.params;
   const result = await favoriteServices.removeFromFavorites(req.user.id, recipeId);
   res.json(result);
-};
+}

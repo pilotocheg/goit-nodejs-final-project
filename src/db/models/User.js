@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { DataTypes } from "sequelize";
 import sequelize from "../sequelize.js";
 import { generateUUID } from "../../helpers/uuidHelper.js";
@@ -40,7 +41,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       defaultValue: null,
     },
-    avatarURL: DataTypes.STRING,
+    avatarURL: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
   },
   { timestamps: false },
 );

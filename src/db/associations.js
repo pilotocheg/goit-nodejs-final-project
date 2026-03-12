@@ -8,6 +8,7 @@ import RecipeIngredients from "./models/RecipeIngredients.js";
 import Ingredient from "./models/Ingredient.js";
 import UserFavorites from "./models/UserFavorites.js";
 
+
 User.belongsToMany(User, {
   through: UserFollows,
   as: "followers",
@@ -38,8 +39,7 @@ Ingredient.belongsToMany(Recipe, {
 });
 
 
-//
-Testimonial.belongsTo(User, { as: "owner", foreignKey: "owner_id" });
+
 // User-Recipe favorites (many-to-many)
 User.belongsToMany(Recipe, {
   through: UserFavorites,
@@ -51,3 +51,8 @@ Recipe.belongsToMany(User, {
   as: "favoritedBy",
   foreignKey: "recipeId",
 });
+Testimonial.belongsTo(User, { as: "owner", foreignKey: "owner_id" });
+
+// TODO (Recipe): when Recipe model exists uncomment the relation
+// User.hasMany(Recipe, { foreignKey: "userId" });
+// Then you can use user.getRecipes(), count, and preview image URLs for followers list.

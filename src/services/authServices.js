@@ -1,17 +1,10 @@
 import gravatar from "gravatar";
-import fs from "fs/promises";
-import path from "path";
 import User from "../db/models/User.js";
 import { generateUUID } from "../helpers/uuidHelper.js";
 import { createToken } from "../helpers/jwtToken.js";
 import { comparePassword, hashPassword } from "../helpers/hash.js";
 import HttpError from "../helpers/HttpError.js";
-
-export const getUserClientData = (dbUser) => ({
-  name: dbUser.name,
-  email: dbUser.email,
-  avatarURL: dbUser.avatarURL,
-});
+import { getUserClientData } from "../helpers/userMappers.js";
 
 export const findUser = (where) => User.findOne({ where });
 
@@ -57,16 +50,3 @@ export const loginUser = async ({ email, password }) => {
 };
 
 export const logoutUser = (user) => user.update({ token: null });
-
-export const updateUserAvatar = async (user, file) => {
-  let avatarURL = null;
-  if (file) {
-    const newPath = path.resolve("public", "avatars", file.filename);
-    await fs.rename(file.path, newPath);
-    avatarURL = path.join("avatars", file.filename);
-  }
-
-  await user.update({ avatarURL });
-
-  return avatarURL;
-};
