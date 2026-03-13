@@ -4,8 +4,11 @@ import morgan from "morgan";
 import cors from "cors";
 import "express-async-errors";
 
+import swaggerUi from "swagger-ui-express";
+
 import errorHandler from "./middlewares/errorHandler.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
+import swaggerDocument from "./swagger/swagger.js";
 import authRouter from "./routes/authRouter.js";
 import categoryRouter from "./routes/categoryRouter.js";
 import areaRouter from "./routes/areaRouter.js";
@@ -19,6 +22,9 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
+app.get("/api-docs.json", (_req, res) => res.json(swaggerDocument));
 
 app.use("/api/auth", authRouter);
 app.use("/api/categories", categoryRouter);
