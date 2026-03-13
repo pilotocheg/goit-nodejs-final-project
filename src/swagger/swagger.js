@@ -322,6 +322,14 @@ Authorization: Bearer <your_token>
               },
             },
           },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -346,7 +354,22 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          404: { description: "User not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "User not found",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -382,9 +405,38 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          400: { description: "Cannot follow yourself", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          404: { description: "User not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          409: { description: "Already following", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          400: {
+            description: "Cannot follow yourself",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "User not found",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          409: {
+            description: "Already following",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -409,7 +461,22 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          404: { description: "Not following this user", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "Not following this user",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
