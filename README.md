@@ -52,6 +52,18 @@ REST API backend for the GoIT Node.js course final project. Provides user authen
 
    API base URL: `http://localhost:3000` (or your `PORT`).
 
+## API Documentation (Swagger)
+
+Interactive documentation is available after starting the server:
+
+- **Swagger UI:** `http://localhost:3000/api-docs`
+- **OpenAPI JSON:** `http://localhost:3000/api-docs.json` (for import into Postman/Insomnia)
+
+In Swagger UI you can:
+- View all endpoints with descriptions
+- Test requests via "Try it out"
+- Authorize via the "Authorize" button (paste JWT token after login)
+
 ## API
 
 Base path for auth: **`/api/auth`**
@@ -62,7 +74,7 @@ Base path for auth: **`/api/auth`**
 | POST   | `/login`    | No   | Login, returns user + token                |
 | GET    | `/current`  | Yes  | Current user profile                       |
 | POST   | `/logout`   | Yes  | Logout (invalidate token)                  |
-| PATCH  | `/avatars`  | Yes  | Upload avatar (multipart, field: `avatar`) |
+| PATCH  | `/avatar`   | Yes  | Upload avatar (multipart, field: `avatar`) |
 
 Protected routes require header: `Authorization: Bearer <token>`.
 
@@ -70,8 +82,10 @@ Public routes:
 
 | Method | Endpoint          | Auth | Description                |
 | ------ | ----------------- | ---- | -------------------------- |
-| GET    | `/api/categories` | No   | List all recipe categories |
-| GET    | `/api/areas`      | No   | List all recipe areas      |
+| GET    | `/api/ingredients`  | No   | List all ingredients       |
+| GET    | `/api/categories`   | No   | List all recipe categories |
+| GET    | `/api/areas`       | No   | List all recipe areas      |
+| GET    | `/api/testimonials`| No   | List all testimonials      |
 
 ## Scripts
 
