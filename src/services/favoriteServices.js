@@ -8,14 +8,14 @@ import HttpError from "../helpers/HttpError.js";
 export const addToFavorites = async (userId, recipeId) => {
   const recipe = await Recipe.findByPk(recipeId);
   if (!recipe) {
-    throw new HttpError(404, 'Recipe not found');
+    throw new HttpError(404, "Recipe not found");
   }
 
   const [favorite, created] = await UserFavorites.findOrCreate({
-    where: { userId, recipeId }
+    where: { userId, recipeId },
   });
   if (!created) {
-throw new HttpError(400, 'Recipe already in favorites');
+    throw new HttpError(400, "Recipe already in favorites");
   }
   return favorite;
 };
@@ -23,32 +23,33 @@ throw new HttpError(400, 'Recipe already in favorites');
 export const removeFromFavorites = async (userId, recipeId) => {
   const recipe = await Recipe.findByPk(recipeId);
   if (!recipe) {
-    throw new HttpError(404, 'Recipe not found');
+    throw new HttpError(404, "Recipe not found");
   }
 
   const deleted = await UserFavorites.destroy({
-    where: { userId, recipeId }
+    where: { userId, recipeId },
   });
   if (!deleted) {
-throw new HttpError(404, 'Recipe not in favorites');
+    throw new HttpError(404, "Recipe not in favorites");
   }
-  return { message: "Removed from favorites" };
 };
 
 export const getFavorites = async (userId) => {
   const user = await User.findByPk(userId, {
     attributes: [],
-    include: [{
-      association: "favoriteRecipes",
-      include: [
-        { model: User, as: "owner", attributes: ["name", "avatarURL"] },
-        {
-          model: Ingredient,
-          through: { model: RecipeIngredients, attributes: ["measure"] },
-          attributes: ["id", "name"]
-        }
-      ]
-    }]
+    include: [
+      {
+        association: "favoriteRecipes",
+        include: [
+          { model: User, as: "owner", attributes: ["name", "avatarURL"] },
+          {
+            model: Ingredient,
+            through: { model: RecipeIngredients, attributes: ["measure"] },
+            attributes: ["id", "name"],
+          },
+        ],
+      },
+    ],
   });
   return user.favoriteRecipes || [];
 };

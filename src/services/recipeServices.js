@@ -29,8 +29,6 @@ export const getRecipeDetailInformation = async (id) => {
 };
 
 export const findByUserId = async (ownerId) => {
-  if (!ownerId) throw new HttpError(400, "Owner ID required");
-
   const recipes = await Recipe.findAll({
     where: { owner_id: ownerId },
     include: [

@@ -20,24 +20,26 @@ export const getPopularRecipes = async (req, res) => {
 };
 
 export const getRecipeDetails = async (req, res) => {
-  try {
     const { id } = req.params;
     const recipe = await recipeService.getRecipeDetailInformation(id);
     if (!recipe) {
       throw new HttpError(404, "Recipe not found");
     }
     res.json(recipe);
-  } catch (error) {
-    throw error;
-  }
 };
 
-export const deleteRecipe = async(req, res) => {
-    const { id } = req.params;
-    const ownerId = req.user.id;
-    const recipe = recipeService.deleteById(id, ownerId);
-    return res.json(recipe);
-}
+export const deleteRecipe = async (req, res) => {
+  const { id } = req.params;
+  const ownerId = req.user.id;
+  
+  const deleted = await recipeService.deleteById(id, ownerId);
+  
+  if (deleted === 0) {
+    throw new HttpError(404, "Recipe not found or not authorized");
+  }
+  
+  res.json({ message: "Recipe deleted successfully" });
+};
 
 export const createRecipe = async (req, res) => {
   let thumbPath = req.body.thumb;

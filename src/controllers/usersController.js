@@ -42,6 +42,6 @@ export const addToFavoritesHandler = async (req, res) => {
 
 export const removeFromFavoritesHandler = async (req, res) => {
   const { recipeId } = req.params;
-  const result = await favoriteServices.removeFromFavorites(req.user.id, recipeId);
-  res.json(result);
+  await favoriteServices.removeFromFavorites(req.user.id, recipeId);
+  res.json({ message: "Removed from favorites" });
 };
