@@ -17,13 +17,3 @@ export const logoutUser = async (req, res) => {
 
   res.status(204).send();
 };
-
-export const getUser = async (req, res) => {
-  res.json(authServices.getUserClientData(req.user));
-};
-
-export const updateUserAvatar = async (req, res) => {
-  const { user, file } = req;
-  const avatarURL = await authServices.updateUserAvatar(user, file);
-  return res.json({ avatarURL });
-};
