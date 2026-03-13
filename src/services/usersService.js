@@ -6,67 +6,104 @@ import fs from "fs/promises";
 import path from "path";
 
 const subscriberFields = ["id", "name", "avatarURL"];
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 100;
 
-export const getSubscribers = async (profileUserId, currentUserId) => {
-  const user = await User.findByPk(profileUserId, {
-    attributes: [],
-    include: [
-      {
-        association: "followers",
-        attributes: subscriberFields,
-        through: { attributes: [] },
-      },
-    ],
+const normalizePagination = (page, limit) => {
+  const p = Math.max(1, parseInt(page, 10) || DEFAULT_PAGE);
+  const l = Math.min(MAX_LIMIT, Math.max(1, parseInt(limit, 10) || DEFAULT_LIMIT));
+  return { page: p, limit: l, offset: (p - 1) * l };
+};
+
+const mapFollowerToResponse = (follower, isFollowing) => ({
+  id: follower.id,
+  name: follower.name,
+  avatarURL: follower.avatarURL,
+  recipesCount: 0, // TODO: replace with Recipe.count per user
+  recipeImageUrls: [], // TODO: up to 4 recipe image URLs for this user
+  isFollowing,
+});
+
+export const getSubscribers = async (profileUserId, currentUserId, pagination = {}) => {
+  const { page, limit, offset } = normalizePagination(pagination.page, pagination.limit);
+
+  const profileExists = await User.findByPk(profileUserId, { attributes: ["id"] });
+  if (!profileExists) throw new HttpError(404, "User not found");
+
+  const { count, rows: followRows } = await UserFollows.findAndCountAll({
+    where: { followingId: profileUserId },
+    attributes: ["followerId"],
+    limit,
+    offset,
   });
 
-  if (!user) throw new HttpError(404, "User not found");
+  const total = count;
+  if (total === 0) {
+    return { data: [], total: 0, page, limit, totalPages: 0 };
+  }
 
-  if (!user.followers?.length) return [];
+  const followerIds = followRows.map((r) => r.followerId);
+  const followers = await User.findAll({
+    where: { id: followerIds },
+    attributes: subscriberFields,
+  });
+  const followerMap = new Map(followers.map((f) => [f.id, f]));
 
-  const followerIds = user.followers.map((f) => f.id);
-
-  const followRows = await UserFollows.findAll({
+  const followRowsCurrent = await UserFollows.findAll({
     where: { followerId: currentUserId, followingId: followerIds },
     attributes: ["followingId"],
   });
-  const followingIds = new Set(followRows.map((r) => r.followingId));
+  const followingIds = new Set(followRowsCurrent.map((r) => r.followingId));
 
-  // TODO (Recipe): get recipes count and preview image URLs per follower
-  // e.g. Recipe.count({ where: { userId: followerId } }), Recipe.findAll({ where: { userId }, limit: 4, attributes: ['imageURL'] })
-  return user.followers.map((follower) => ({
-    id: follower.id,
-    name: follower.name,
-    avatarURL: follower.avatarURL,
-    recipesCount: 0, // TODO: replace with Recipe.count per user
-    recipeImageUrls: [], // TODO: up to 4 recipe image URLs for this user
-    isFollowing: followingIds.has(follower.id),
-  }));
+  const data = followerIds
+    .map((id) => followerMap.get(id))
+    .filter(Boolean)
+    .map((follower) => mapFollowerToResponse(follower, followingIds.has(follower.id)));
+
+  const totalPages = Math.ceil(total / limit);
+  return { data, total, page, limit, totalPages };
 };
 
-export const getFollowing = async (currentUserId) => {
-  const user = await User.findByPk(currentUserId, {
-    attributes: [],
-    include: [
-      {
-        association: "following",
-        attributes: subscriberFields,
-        through: { attributes: [] },
-      },
-    ],
+export const getFollowing = async (currentUserId, pagination = {}) => {
+  const { page, limit, offset } = normalizePagination(pagination.page, pagination.limit);
+
+  const userExists = await User.findByPk(currentUserId, { attributes: ["id"] });
+  if (!userExists) throw new HttpError(404, "User not found");
+
+  const { count, rows: followRows } = await UserFollows.findAndCountAll({
+    where: { followerId: currentUserId },
+    attributes: ["followingId"],
+    limit,
+    offset,
   });
 
-  if (!user) throw new HttpError(404, "User not found");
+  const total = count;
+  if (total === 0) {
+    return { data: [], total: 0, page, limit, totalPages: 0 };
+  }
 
-  if (!user.following?.length) return [];
+  const followingIds = followRows.map((r) => r.followingId);
+  const following = await User.findAll({
+    where: { id: followingIds },
+    attributes: subscriberFields,
+  });
+  const followingMap = new Map(following.map((f) => [f.id, f]));
 
-  return user.following.map((u) => ({
-    id: u.id,
-    name: u.name,
-    avatarURL: u.avatarURL,
-    recipesCount: 0, // TODO: replace with Recipe.count per user
-    recipeImageUrls: [], // TODO: up to 4 recipe image URLs for this user
-    isFollowing: true,
-  }));
+  const data = followingIds
+    .map((id) => followingMap.get(id))
+    .filter(Boolean)
+    .map((u) => ({
+      id: u.id,
+      name: u.name,
+      avatarURL: u.avatarURL,
+      recipesCount: 0, // TODO: replace with Recipe.count per user
+      recipeImageUrls: [], // TODO: up to 4 recipe image URLs for this user
+      isFollowing: true,
+    }));
+
+  const totalPages = Math.ceil(total / limit);
+  return { data, total, page, limit, totalPages };
 };
 
 export const followUser = async (currentUserId, targetUserId) => {

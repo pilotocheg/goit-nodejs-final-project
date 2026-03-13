@@ -25,13 +25,15 @@ export const updateUserAvatarController = async (req, res) => {
 
 export const getMySubscribers = async (req, res) => {
   const { profileUserId } = req.params;
-  const subscribers = await getSubscribers(profileUserId, req.user.id);
-  res.json(subscribers);
+  const { page, limit } = req.query;
+  const result = await getSubscribers(profileUserId, req.user.id, { page, limit });
+  res.json(result);
 };
 
 export const getMyFollowing = async (req, res) => {
-  const following = await getFollowing(req.user.id);
-  res.json(following);
+  const { page, limit } = req.query;
+  const result = await getFollowing(req.user.id, { page, limit });
+  res.json(result);
 };
 
 export const followUserHandler = async (req, res) => {
