@@ -119,8 +119,6 @@ export const followUser = async (currentUserId, targetUserId) => {
   });
 
   if (!created) throw new HttpError(409, "Already following this user");
-
-  return getFollowing(currentUserId);
 };
 
 export const unfollowUser = async (currentUserId, targetUserId) => {
@@ -128,8 +126,6 @@ export const unfollowUser = async (currentUserId, targetUserId) => {
     where: { followerId: currentUserId, followingId: targetUserId },
   });
   if (removed === 0) throw new HttpError(404, "Not following this user");
-
-  return getFollowing(currentUserId);
 };
 
 export const updateUserAvatar = async (user, file) => {
