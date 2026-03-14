@@ -34,22 +34,43 @@ export const removeFromFavorites = async (userId, recipeId) => {
   }
 };
 
-export const getFavorites = async (userId) => {
-  const user = await User.findByPk(userId, {
-    attributes: [],
+export const getFavorites = async (userId, page = 1, limit = 10) => {
+  const parsedLimit = parseInt(limit);
+  const parsedPage = parseInt(page);
+  const offset = (parsedPage - 1) * parsedLimit;
+
+  if (parsedPage < 1) {
+    throw new HttpError(400, "Page must be greater than 0");
+  }
+
+  const { rows: favoriteRecipes, count: total } = await Recipe.findAndCountAll({
+    limit: parsedLimit,
+    offset: offset,
+    distinct: true,
     include: [
       {
-        association: "favoriteRecipes",
-        include: [
-          { model: User, as: "owner", attributes: ["name", "avatarURL"] },
-          {
-            model: Ingredient,
-            through: { model: RecipeIngredients, attributes: ["measure"] },
-            attributes: ["id", "name"],
-          },
-        ],
+        model: User,
+        as: "favoritedBy",
+        where: { id: userId },
+        attributes: [],
       },
+      { 
+        model: User, 
+        as: "owner", 
+        attributes: ["name", "avatarURL"] 
+      }
     ],
   });
-  return user.favoriteRecipes || [];
+
+  if (total > 0 && offset >= total) {
+    throw new HttpError(404, "Page not found");
+  }
+
+  return {
+    favoriteRecipes,
+    total,
+    totalPages: Math.ceil(total / parsedLimit),
+    currentPage: parsedPage,
+    limit: parsedLimit,
+  };
 };

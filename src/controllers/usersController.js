@@ -48,7 +48,8 @@ export const unfollowUserHandler = async (req, res) => {
 };
 
 export const getFavoritesHandler = async (req, res) => {
-  const favorites = await favoriteServices.getFavorites(req.user.id);
+  const { page = 1, limit = 10 } = req.query;
+  const favorites = await favoriteServices.getFavorites(req.user.id, page, limit);
   res.json(favorites);
 };
 
