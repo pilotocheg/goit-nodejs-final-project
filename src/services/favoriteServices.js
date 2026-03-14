@@ -39,6 +39,10 @@ export const getFavorites = async (userId, page = 1, limit = 10) => {
   const parsedPage = parseInt(page);
   const offset = (parsedPage - 1) * parsedLimit;
 
+  if (parsedPage < 1) {
+    throw new HttpError(400, "Page must be greater than 0");
+  }
+
   const { rows: favoriteRecipes, count: total } = await Recipe.findAndCountAll({
     limit: parsedLimit,
     offset: offset,
@@ -57,6 +61,10 @@ export const getFavorites = async (userId, page = 1, limit = 10) => {
       }
     ],
   });
+
+  if (total > 0 && offset >= total) {
+    throw new HttpError(404, "Page not found");
+  }
 
   return {
     favoriteRecipes,
