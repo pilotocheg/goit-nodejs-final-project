@@ -6,8 +6,6 @@ import sequelize from "../db/sequelize.js";
 import HttpError from "../helpers/HttpError.js";
 import { Op } from "sequelize";
 import UserFavorites from "../db/models/UserFavorites.js";
-import path from "path";
-import fs from "fs/promises";
 
 export const getRecipeDetailInformation = async (id) => {
   const recipe = await Recipe.findByPk(id, {
@@ -53,15 +51,17 @@ export const findByUserId = async (ownerId) => {
   return recipes;
 };
 
-export const processThumb = async(file) => {
-    if (file) {
+export const processThumb = async (file) => {
+  if (file) {
     const filename = file.filename;
     const timestamp = Date.now();
     const newFilename = `${timestamp}_${filename}`;
     const tempPath = path.join("temp", filename);
     const recipesDir = path.join("public", "recipes");
     const finalPath = path.join(recipesDir, newFilename);
-    const relativeThumbPath = path.join("recipes", newFilename).replace(/\\/g, "/");
+    const relativeThumbPath = path
+      .join("recipes", newFilename)
+      .replace(/\\/g, "/");
 
     try {
       await fs.rename(tempPath, finalPath);
@@ -70,8 +70,7 @@ export const processThumb = async(file) => {
       throw new HttpError(500, "Failed to save image");
     }
   }
-
-}
+};
 
 export const createRecipe = async (body, ownerId) => {
   const transaction = await sequelize.transaction();
@@ -127,37 +126,39 @@ export const searchRecipes = async (query) => {
   if (category) where.category = { [Op.iLike]: `%${category}%` };
   if (area) where.area = { [Op.iLike]: `%${area}%` };
 
-const userInclude = {
-    model: User,
-    as: "owner",
-    attributes: ["id", "name", "avatarURL"],
-  };
-
-  const ingredientsListInclude = {
-    model: Ingredient,
-    through: { model: RecipeIngredients, attributes: ["measure"] },
-    attributes: ["id", "name"],
-  };
-
-  const include = [userInclude, ingredientsListInclude];
+  const include = [
+    {
+      model: User,
+      as: "owner",
+      attributes: ["id", "name", "avatarURL"],
+    },
+  ];
 
   if (ingredient) {
-    const ingredientsFilterInclude = {
+    include.push({
       model: Ingredient,
       where: { name: { [Op.iLike]: `%${ingredient}%` } },
       through: { attributes: [] },
       attributes: [],
       required: true,
-    };
-    include.push(ingredientsFilterInclude);
+    });
   }
 
   const { count, rows } = await Recipe.findAndCountAll({
     where,
     include,
+    distinct: true,
     limit: parseInt(limit),
-    offset: parseInt(offset)
+    offset: parseInt(offset),
   });
+
+  if (rows.length === 0 && offset > 0) {
+    throw new HttpError(404, "Page not found");
+  }
+
+  if (count === 0) {
+    throw new HttpError(404, "No recipes found matching your criteria");
+  }
 
   return {
     recipes: rows,
@@ -180,13 +181,13 @@ export const getPopularRecipes = async () => {
     raw: true
   });
 
-  const topRecipeIds = topFavorites.map(row => row.recipeId);
+  const topRecipeIds = topFavorites.map((row) => row.recipeId);
 
   const recipes = await Recipe.findAll({
     where: {
       id: {
-        [Op.in]: topRecipeIds
-      }
+        [Op.in]: topRecipeIds,
+      },
     },
     include: [
       {
@@ -202,7 +203,7 @@ export const getPopularRecipes = async () => {
         },
         attributes: ["id", "name", "img"],
       },
-    ]
+    ],
   });
 
   return {
