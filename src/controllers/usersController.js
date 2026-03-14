@@ -39,14 +39,14 @@ export const getMyFollowing = async (req, res) => {
 
 export const followUserHandler = async (req, res) => {
   const { targetUserId } = req.body;
-  const result = await followUser(req.user.id, targetUserId);
-  res.status(201).json(result);
+  await followUser(req.user.id, targetUserId);
+  res.status(204).end();
 };
 
 export const unfollowUserHandler = async (req, res) => {
   const { targetUserId } = req.params;
-  const result = await unfollowUser(req.user.id, targetUserId);
-  res.json(result);
+  await unfollowUser(req.user.id, targetUserId);
+  res.status(204).end();
 };
 
 export const getFavoritesHandler = async (req, res) => {
