@@ -6,6 +6,8 @@ import sequelize from "../db/sequelize.js";
 import HttpError from "../helpers/HttpError.js";
 import { Op } from "sequelize";
 import UserFavorites from "../db/models/UserFavorites.js";
+import path from "path";
+import fs from "fs/promises";
 
 export const getRecipeDetailInformation = async (id) => {
   const recipe = await Recipe.findByPk(id, {
@@ -50,6 +52,26 @@ export const findByUserId = async (ownerId) => {
 
   return recipes;
 };
+
+export const processThumb = async(file) => {
+    if (file) {
+    const filename = file.filename;
+    const timestamp = Date.now();
+    const newFilename = `${timestamp}_${filename}`;
+    const tempPath = path.join("temp", filename);
+    const recipesDir = path.join("public", "recipes");
+    const finalPath = path.join(recipesDir, newFilename);
+    const relativeThumbPath = path.join("recipes", newFilename).replace(/\\/g, "/");
+
+    try {
+      await fs.rename(tempPath, finalPath);
+      return relativeThumbPath;
+    } catch (error) {
+      throw new HttpError(500, "Failed to save image");
+    }
+  }
+
+}
 
 export const createRecipe = async (body, ownerId) => {
   const transaction = await sequelize.transaction();
