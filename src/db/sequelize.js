@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   dialectOptions: {
-    ssl: false,
+    ssl: true,
   },
 });
 
