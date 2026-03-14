@@ -15,6 +15,7 @@ import areaRouter from "./routes/areaRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
 import ingredientsRouter from "./routes/ingredientsRouter.js";
+import recipeRouter from "./routes/recipeRouter.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/areas", areaRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/testimonials", testimonialRouter);
 app.use("/api/ingredients", ingredientsRouter);
+app.use("/api/recipes", recipeRouter);
 
 app.use(notFoundHandler);
 
