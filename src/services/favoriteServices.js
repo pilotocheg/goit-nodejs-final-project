@@ -54,12 +54,7 @@ export const getFavorites = async (userId, page = 1, limit = 10) => {
         model: User, 
         as: "owner", 
         attributes: ["name", "avatarURL"] 
-      },
-      {
-        model: Ingredient,
-        through: { attributes: ["measure"] },
-        attributes: ["id", "name"],
-      },
+      }
     ],
   });
 
