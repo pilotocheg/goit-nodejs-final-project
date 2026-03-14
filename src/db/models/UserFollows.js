@@ -17,7 +17,7 @@ const UserFollows = sequelize.define(
       onDelete: "CASCADE",
     },
   },
-  { timestamps: false },
+  { timestamps: false }
 );
 
 //TODO Synced from db/connect.js after fixing FK types (associations overwrite them to match User.id).
