@@ -66,26 +66,14 @@ In Swagger UI you can:
 
 ## API
 
-Base path for auth: **`/api/auth`**
+See **Swagger UI** (`/api-docs`) for full documentation.
 
-| Method | Endpoint    | Auth | Description                                |
-| ------ | ----------- | ---- | ------------------------------------------ |
-| POST   | `/register` | No   | Register (email, password)                 |
-| POST   | `/login`    | No   | Login, returns user + token                |
-| GET    | `/current`  | Yes  | Current user profile                       |
-| POST   | `/logout`   | Yes  | Logout (invalidate token)                  |
-| PATCH  | `/avatar`   | Yes  | Upload avatar (multipart, field: `avatar`) |
+**Auth** (`/api/auth`): register, login, logout  
+**Users** (`/api/users`): profile, avatar, following, favorites  
+**Recipes** (`/api/recipes`): own, search, popular, details, create, delete  
+**Public** (`/api/ingredients`, `/api/categories`, `/api/areas`, `/api/testimonials`)
 
 Protected routes require header: `Authorization: Bearer <token>`.
-
-Public routes:
-
-| Method | Endpoint          | Auth | Description                |
-| ------ | ----------------- | ---- | -------------------------- |
-| GET    | `/api/ingredients`  | No   | List all ingredients       |
-| GET    | `/api/categories`   | No   | List all recipe categories |
-| GET    | `/api/areas`       | No   | List all recipe areas      |
-| GET    | `/api/testimonials`| No   | List all testimonials      |
 
 ## Scripts
 

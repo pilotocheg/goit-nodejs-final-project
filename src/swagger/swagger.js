@@ -36,7 +36,8 @@ Authorization: Bearer <your_token>
   ],
   tags: [
     { name: "Auth", description: "Registration and authentication" },
-    { name: "Users", description: "Profile and subscriptions" },
+    { name: "Users", description: "Profile, subscriptions and favorites" },
+    { name: "Recipes", description: "Recipe CRUD and search" },
     { name: "Ingredients", description: "Ingredients list" },
     { name: "Categories", description: "Recipe categories" },
     { name: "Areas", description: "World cuisines" },
@@ -109,6 +110,57 @@ Authorization: Bearer <your_token>
         properties: {
           id: { type: "string" },
           testimonial: { type: "string" },
+        },
+      },
+      RecipeOwner: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          avatarURL: { type: "string", nullable: true },
+          email: { type: "string", description: "Only in recipe details" },
+        },
+      },
+      RecipeIngredient: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          img: { type: "string", nullable: true },
+          RecipeIngredients: {
+            type: "object",
+            properties: { measure: { type: "string" } },
+          },
+        },
+      },
+      Recipe: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          category: { type: "string" },
+          area: { type: "string" },
+          instructions: { type: "string" },
+          description: { type: "string" },
+          thumb: { type: "string" },
+          preview: { type: "string", nullable: true },
+          time: { type: "integer" },
+          owner_id: { type: "string" },
+          owner: { $ref: "#/components/schemas/RecipeOwner" },
+          ingredients: {
+            type: "array",
+            items: { $ref: "#/components/schemas/RecipeIngredient" },
+          },
+        },
+      },
+      SearchResult: {
+        type: "object",
+        properties: {
+          recipes: { type: "array", items: { $ref: "#/components/schemas/Recipe" } },
+          total: { type: "integer" },
+          totalPages: { type: "integer" },
+          currentPage: { type: "integer" },
+          limit: { type: "integer" },
         },
       },
       Error: {
@@ -477,6 +529,246 @@ Authorization: Bearer <your_token>
               },
             },
           },
+        },
+      },
+    },
+    "/users/favorites": {
+      get: {
+        tags: ["Users"],
+        summary: "Get favorites",
+        description: "List of recipes added to favorites by the current user.",
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            description: "Favorites list",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: { $ref: "#/components/schemas/Recipe" },
+                },
+              },
+            },
+          },
+          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+        },
+      },
+    },
+    "/users/favorites/{recipeId}": {
+      post: {
+        tags: ["Users"],
+        summary: "Add to favorites",
+        description: "Add a recipe to favorites.",
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: "recipeId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          201: {
+            description: "Added to favorites",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { message: { type: "string", example: "Added to favorites" } },
+                },
+              },
+            },
+          },
+          400: { description: "Recipe already in favorites", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          404: { description: "Recipe not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+        },
+      },
+      delete: {
+        tags: ["Users"],
+        summary: "Remove from favorites",
+        description: "Remove a recipe from favorites.",
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: "recipeId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Removed from favorites",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { message: { type: "string", example: "Removed from favorites" } },
+                },
+              },
+            },
+          },
+          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          404: { description: "Recipe not found or not in favorites", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+        },
+      },
+    },
+
+    // ============ RECIPES ============
+    "/recipes/own": {
+      get: {
+        tags: ["Recipes"],
+        summary: "My recipes",
+        description: "List of recipes created by the current user.",
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            description: "User's recipes",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: { $ref: "#/components/schemas/Recipe" },
+                },
+              },
+            },
+          },
+          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+        },
+      },
+    },
+    "/recipes/search": {
+      get: {
+        tags: ["Recipes"],
+        summary: "Search recipes",
+        description: "Search recipes by category, area, ingredient. Pagination supported.",
+        parameters: [
+          { name: "category", in: "query", schema: { type: "string" }, description: "Filter by category (partial match)" },
+          { name: "area", in: "query", schema: { type: "string" }, description: "Filter by area/cuisine (partial match)" },
+          { name: "ingredient", in: "query", schema: { type: "string" }, description: "Filter by ingredient name (partial match)" },
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+        ],
+        responses: {
+          200: {
+            description: "Search results with pagination",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/SearchResult" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/recipes/popular": {
+      get: {
+        tags: ["Recipes"],
+        summary: "Popular recipes",
+        description: "Top 10 recipes by number of favorites.",
+        responses: {
+          200: {
+            description: "Popular recipes",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    recipes: { type: "array", items: { $ref: "#/components/schemas/Recipe" } },
+                    total: { type: "integer" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/recipes/{id}": {
+      get: {
+        tags: ["Recipes"],
+        summary: "Recipe details",
+        description: "Recipe by ID with full details including owner and ingredients.",
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Recipe details",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Recipe" },
+              },
+            },
+          },
+          404: { description: "Recipe not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+        },
+      },
+      delete: {
+        tags: ["Recipes"],
+        summary: "Delete recipe",
+        description: "Delete own recipe by ID.",
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Recipe deleted",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { message: { type: "string", example: "Recipe deleted successfully" } },
+                },
+              },
+            },
+          },
+          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          404: { description: "Recipe not found or not authorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+        },
+      },
+    },
+    "/recipes": {
+      post: {
+        tags: ["Recipes"],
+        summary: "Create recipe",
+        description: "Create a new recipe. Multipart form-data: `thumb` (image), `title`, `category`, `area`, `instructions`, `description`, `time`, `preview` (optional), `ingredients` (JSON array of {ingredientId, measure}).",
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                required: ["title", "category", "area", "instructions", "description", "time", "ingredients"],
+                properties: {
+                  thumb: { type: "string", format: "binary" },
+                  title: { type: "string" },
+                  category: { type: "string" },
+                  area: { type: "string" },
+                  instructions: { type: "string" },
+                  description: { type: "string" },
+                  time: { type: "integer" },
+                  preview: { type: "string" },
+                  ingredients: {
+                    type: "string",
+                    description: "JSON array: [{ingredientId, measure}]",
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: "Recipe created",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    message: { type: "string" },
+                    recipe: { $ref: "#/components/schemas/Recipe" },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: "Invalid data", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
         },
       },
     },
