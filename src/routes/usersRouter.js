@@ -4,6 +4,9 @@ import {
   getMyFollowing,
   followUserHandler,
   unfollowUserHandler,
+  getFavoritesHandler,
+  addToFavoritesHandler,
+  removeFromFavoritesHandler,
   getCurrentUser,
   getUser,
   updateUserAvatarController,
@@ -19,6 +22,13 @@ const usersRouter = express.Router();
 usersRouter.use(authenticate);
 usersRouter.get("/following", getMyFollowing);
 usersRouter.get("/:profileUserId/subscribers", getMySubscribers);
+
+usersRouter.get("/favorites", getFavoritesHandler);
+usersRouter.post("/favorites/:recipeId", addToFavoritesHandler);
+usersRouter.delete("/favorites/:recipeId", removeFromFavoritesHandler);
+
+usersRouter.patch("/follow", validateBody(targetUserIdSchema), followUserHandler);
+usersRouter.delete("/:targetUserId/follow",unfollowUserHandler);
 usersRouter.patch(
   "/follow",
   validateBody(targetUserIdSchema),

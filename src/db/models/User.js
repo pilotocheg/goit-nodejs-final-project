@@ -1,22 +1,20 @@
 import crypto from "crypto";
 import { DataTypes } from "sequelize";
 import sequelize from "../sequelize.js";
+import { generateUUID } from "../../helpers/uuidHelper.js";
 import {
   emailValidationErrMessage,
   emailValidationPattern,
 } from "../../constants/validation.js";
 
-const generateShortId = () => crypto.randomBytes(12).toString("hex");
-
 const User = sequelize.define(
   "user",
   {
     id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    allowNull: false,
-    defaultValue: generateShortId,
-  },
+      type: DataTypes.STRING(24),
+      primaryKey: true,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -51,7 +49,8 @@ const User = sequelize.define(
   { timestamps: false },
 );
 
-// uncomment to sync if the model above was updated
-// User.sync({ alter: true });
+User.beforeCreate((user) => {
+  user.id = generateUUID();
+});
 
 export default User;

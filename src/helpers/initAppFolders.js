@@ -3,6 +3,7 @@ import fs from "fs/promises";
 
 const tempDirPath = path.join(process.cwd(), "temp");
 const avatarsDirPath = path.join(process.cwd(), "public", "avatars");
+const recipesDirPath = path.join(process.cwd(), "public", "recipes");
 
 const isAccessible = async (path) => {
   try {
@@ -22,6 +23,7 @@ const createFolderIsNotExist = async (folder) => {
 const initAppFolders = async () => {
   await createFolderIsNotExist(tempDirPath);
   await createFolderIsNotExist(avatarsDirPath);
+  await createFolderIsNotExist(recipesDirPath);
 };
 
 export default initAppFolders;

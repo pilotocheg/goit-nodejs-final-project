@@ -1,5 +1,6 @@
 import gravatar from "gravatar";
 import User from "../db/models/User.js";
+import { generateUUID } from "../helpers/uuidHelper.js";
 import { createToken } from "../helpers/jwtToken.js";
 import { comparePassword, hashPassword } from "../helpers/hash.js";
 import HttpError from "../helpers/HttpError.js";
@@ -13,6 +14,7 @@ export const createUser = async ({ name, password, email }) => {
   const avatarURL = gravatar.url(email, { protocol: "https", s: "200" });
 
   const newUser = await User.create({
+    id: generateUUID(),
     name,
     email,
     password: hashedPassword,
