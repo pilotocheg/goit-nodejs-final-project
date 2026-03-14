@@ -1,6 +1,6 @@
 # GoIT Node.js Final Project
 
-REST API backend for the GoIT Node.js course final project. Provides user authentication (register, login, JWT), current user profile, and avatar upload.
+REST API backend for the GoIT Node.js course final project. Provides user authentication (register, login, JWT), profile management, avatar upload, following/subscribers, favorites, and recipe CRUD with search.
 
 ## Tech stack
 
@@ -86,13 +86,14 @@ Protected routes require header: `Authorization: Bearer <token>`.
 ```
 src/
 ├── constants/       # validation patterns, etc.
-├── controllers/     # auth controllers
+├── controllers/     # auth, users, recipes, etc.
 ├── db/              # Sequelize config, models, associations
-├── helpers/         # HttpError, validateBody, hash, jwtToken, initAppFolders
+├── helpers/         # HttpError, validateBody, hash, jwtToken, initAppFolders, uuidHelper
 ├── middlewares/     # authenticate, errorHandler, notFoundHandler, upload
-├── routes/          # auth router
-├── schemas/         # Joi schemas (auth, types)
-├── services/        # auth business logic
+├── routes/          # auth, users, recipes, ingredients, categories, areas, testimonials
+├── schemas/         # Joi schemas (auth, users, recipes)
+├── services/        # auth, users, recipes, favorites
+├── swagger/         # OpenAPI 3.0 spec
 ├── index.js         # entry, DB connect, server listen
 └── server.js        # Express app, routes, middlewares
 ```

@@ -53,12 +53,36 @@ Authorization: Bearer <your_token>
       },
     },
     schemas: {
-      User: {
+      AuthUser: {
         type: "object",
         properties: {
           name: { type: "string", example: "John Doe" },
-          email: { type: "string", format: "email", example: "john@example.com" },
-          avatarURL: { type: "string", nullable: true, example: "avatars/abc123.jpg" },
+          email: {
+            type: "string",
+            format: "email",
+            example: "john@example.com",
+          },
+          avatarURL: {
+            type: "string",
+            nullable: true,
+            example: "avatars/abc123.jpg",
+          },
+        },
+      },
+      CurrentUserProfile: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          email: { type: "string", format: "email" },
+          avatarURL: { type: "string", nullable: true },
+          followersCount: {
+            type: "integer",
+            description: "Number of followers",
+          },
+          followingCount: {
+            type: "integer",
+            description: "Number of following",
+          },
         },
       },
       UserProfile: {
@@ -67,8 +91,10 @@ Authorization: Bearer <your_token>
           name: { type: "string" },
           email: { type: "string", format: "email" },
           avatarURL: { type: "string", nullable: true },
-          followersCount: { type: "integer", description: "Number of followers" },
-          followingCount: { type: "integer", description: "Number of following (only for /current)" },
+          followersCount: {
+            type: "integer",
+            description: "Number of followers",
+          },
         },
       },
       Subscriber: {
@@ -80,6 +106,32 @@ Authorization: Bearer <your_token>
           recipesCount: { type: "integer" },
           recipeImageUrls: { type: "array", items: { type: "string" } },
           isFollowing: { type: "boolean" },
+        },
+      },
+      PaginatedSubscribers: {
+        type: "object",
+        properties: {
+          data: {
+            type: "array",
+            items: { $ref: "#/components/schemas/Subscriber" },
+          },
+          total: { type: "integer" },
+          page: { type: "integer" },
+          limit: { type: "integer" },
+          totalPages: { type: "integer" },
+        },
+      },
+      PaginatedFavorites: {
+        type: "object",
+        properties: {
+          favoriteRecipes: {
+            type: "array",
+            items: { $ref: "#/components/schemas/Recipe" },
+          },
+          total: { type: "integer" },
+          totalPages: { type: "integer" },
+          currentPage: { type: "integer" },
+          limit: { type: "integer" },
         },
       },
       Ingredient: {
@@ -156,7 +208,10 @@ Authorization: Bearer <your_token>
       SearchResult: {
         type: "object",
         properties: {
-          recipes: { type: "array", items: { $ref: "#/components/schemas/Recipe" } },
+          recipes: {
+            type: "array",
+            items: { $ref: "#/components/schemas/Recipe" },
+          },
           total: { type: "integer" },
           totalPages: { type: "integer" },
           currentPage: { type: "integer" },
@@ -177,7 +232,8 @@ Authorization: Bearer <your_token>
       post: {
         tags: ["Auth"],
         summary: "Register",
-        description: "Creates a new user. Password must be at least 6 characters.",
+        description:
+          "Creates a new user. Password must be at least 6 characters.",
         requestBody: {
           required: true,
           content: {
@@ -187,8 +243,16 @@ Authorization: Bearer <your_token>
                 required: ["name", "email", "password"],
                 properties: {
                   name: { type: "string", example: "John Doe" },
-                  email: { type: "string", format: "email", example: "john@example.com" },
-                  password: { type: "string", minLength: 6, example: "secret123" },
+                  email: {
+                    type: "string",
+                    format: "email",
+                    example: "john@example.com",
+                  },
+                  password: {
+                    type: "string",
+                    minLength: 6,
+                    example: "secret123",
+                  },
                 },
               },
             },
@@ -202,7 +266,7 @@ Authorization: Bearer <your_token>
                 schema: {
                   type: "object",
                   properties: {
-                    user: { $ref: "#/components/schemas/User" },
+                    user: { $ref: "#/components/schemas/AuthUser" },
                   },
                 },
                 example: {
@@ -215,8 +279,22 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          400: { description: "Invalid data", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          409: { description: "Email already in use", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          400: {
+            description: "Invalid data",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          409: {
+            description: "Email already in use",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -233,8 +311,16 @@ Authorization: Bearer <your_token>
                 type: "object",
                 required: ["email", "password"],
                 properties: {
-                  email: { type: "string", format: "email", example: "john@example.com" },
-                  password: { type: "string", minLength: 6, example: "secret123" },
+                  email: {
+                    type: "string",
+                    format: "email",
+                    example: "john@example.com",
+                  },
+                  password: {
+                    type: "string",
+                    minLength: 6,
+                    example: "secret123",
+                  },
                 },
               },
             },
@@ -248,8 +334,11 @@ Authorization: Bearer <your_token>
                 schema: {
                   type: "object",
                   properties: {
-                    token: { type: "string", description: "JWT token for Authorization header" },
-                    user: { $ref: "#/components/schemas/User" },
+                    token: {
+                      type: "string",
+                      description: "JWT token for Authorization header",
+                    },
+                    user: { $ref: "#/components/schemas/AuthUser" },
                   },
                 },
                 example: {
@@ -263,7 +352,14 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          401: { description: "Invalid email or password", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Invalid email or password",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -275,7 +371,14 @@ Authorization: Bearer <your_token>
         security: [{ BearerAuth: [] }],
         responses: {
           204: { description: "Logout successful" },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -285,18 +388,26 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Users"],
         summary: "Current user",
-        description: "Authenticated user data with followers and following count.",
+        description:
+          "Authenticated user data with followers and following count.",
         security: [{ BearerAuth: [] }],
         responses: {
           200: {
             description: "Current user profile",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/UserProfile" },
+                schema: { $ref: "#/components/schemas/CurrentUserProfile" },
               },
             },
           },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -304,10 +415,15 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Users"],
         summary: "User profile",
-        description: "Public user data by ID.",
+        description: "Public user data by ID (no followingCount).",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "userId", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "userId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           200: {
@@ -318,7 +434,22 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          404: { description: "User not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "User not found",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -352,7 +483,14 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -360,17 +498,18 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Users"],
         summary: "My following",
-        description: "List of users the current user is following.",
+        description: "Paginated list of users the current user is following.",
         security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+        ],
         responses: {
           200: {
-            description: "Following list",
+            description: "Following list (paginated)",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Subscriber" },
-                },
+                schema: { $ref: "#/components/schemas/PaginatedSubscribers" },
               },
             },
           },
@@ -389,20 +528,24 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Users"],
         summary: "Profile subscribers",
-        description: "List of subscribers for the specified user.",
+        description: "Paginated list of subscribers for the specified user.",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "profileUserId", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "profileUserId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
         ],
         responses: {
           200: {
-            description: "Subscribers list",
+            description: "Subscribers list (paginated)",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Subscriber" },
-                },
+                schema: { $ref: "#/components/schemas/PaginatedSubscribers" },
               },
             },
           },
@@ -446,16 +589,8 @@ Authorization: Bearer <your_token>
           },
         },
         responses: {
-          201: {
-            description: "Follow created, returns updated following list",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Subscriber" },
-                },
-              },
-            },
+          204: {
+            description: "Follow created (no body)",
           },
           400: {
             description: "Cannot follow yourself",
@@ -499,19 +634,16 @@ Authorization: Bearer <your_token>
         description: "Remove following for a user.",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "targetUserId", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "targetUserId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
-          200: {
-            description: "Unfollow completed, returns updated following list",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Subscriber" },
-                },
-              },
-            },
+          204: {
+            description: "Unfollow completed (no body)",
           },
           401: {
             description: "Unauthorized",
@@ -536,21 +668,45 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Users"],
         summary: "Get favorites",
-        description: "List of recipes added to favorites by the current user.",
+        description: "Paginated list of recipes added to favorites by the current user.",
         security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+        ],
         responses: {
           200: {
-            description: "Favorites list",
+            description: "Favorites list (paginated)",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Recipe" },
-                },
+                schema: { $ref: "#/components/schemas/PaginatedFavorites" },
               },
             },
           },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          400: {
+            description: "Invalid pagination (e.g. page < 1)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "Page not found (page out of range)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -561,7 +717,12 @@ Authorization: Bearer <your_token>
         description: "Add a recipe to favorites.",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "recipeId", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "recipeId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           201: {
@@ -570,14 +731,37 @@ Authorization: Bearer <your_token>
               "application/json": {
                 schema: {
                   type: "object",
-                  properties: { message: { type: "string", example: "Added to favorites" } },
+                  properties: {
+                    message: { type: "string", example: "Added to favorites" },
+                  },
                 },
               },
             },
           },
-          400: { description: "Recipe already in favorites", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          404: { description: "Recipe not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          400: {
+            description: "Recipe already in favorites",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "Recipe not found",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
       delete: {
@@ -586,7 +770,12 @@ Authorization: Bearer <your_token>
         description: "Remove a recipe from favorites.",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "recipeId", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "recipeId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           200: {
@@ -595,13 +784,32 @@ Authorization: Bearer <your_token>
               "application/json": {
                 schema: {
                   type: "object",
-                  properties: { message: { type: "string", example: "Removed from favorites" } },
+                  properties: {
+                    message: {
+                      type: "string",
+                      example: "Removed from favorites",
+                    },
+                  },
                 },
               },
             },
           },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          404: { description: "Recipe not found or not in favorites", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "Recipe not found or not in favorites",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -625,7 +833,14 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -633,13 +848,37 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Recipes"],
         summary: "Search recipes",
-        description: "Search recipes by category, area, ingredient. Pagination supported.",
+        description:
+          "Search recipes by category, area, ingredient. Pagination supported.",
         parameters: [
-          { name: "category", in: "query", schema: { type: "string" }, description: "Filter by category (partial match)" },
-          { name: "area", in: "query", schema: { type: "string" }, description: "Filter by area/cuisine (partial match)" },
-          { name: "ingredient", in: "query", schema: { type: "string" }, description: "Filter by ingredient name (partial match)" },
-          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          {
+            name: "category",
+            in: "query",
+            schema: { type: "string" },
+            description: "Filter by category (partial match)",
+          },
+          {
+            name: "area",
+            in: "query",
+            schema: { type: "string" },
+            description: "Filter by area/cuisine (partial match)",
+          },
+          {
+            name: "ingredient",
+            in: "query",
+            schema: { type: "string" },
+            description: "Filter by ingredient name (partial match)",
+          },
+          {
+            name: "page",
+            in: "query",
+            schema: { type: "integer", default: 1 },
+          },
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", default: 10 },
+          },
         ],
         responses: {
           200: {
@@ -647,6 +886,14 @@ Authorization: Bearer <your_token>
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/SearchResult" },
+              },
+            },
+          },
+          404: {
+            description: "No recipes found or page out of range",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
               },
             },
           },
@@ -666,7 +913,10 @@ Authorization: Bearer <your_token>
                 schema: {
                   type: "object",
                   properties: {
-                    recipes: { type: "array", items: { $ref: "#/components/schemas/Recipe" } },
+                    recipes: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/Recipe" },
+                    },
                     total: { type: "integer" },
                   },
                 },
@@ -680,9 +930,15 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Recipes"],
         summary: "Recipe details",
-        description: "Recipe by ID with full details including owner and ingredients.",
+        description:
+          "Recipe by ID with full details including owner and ingredients.",
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           200: {
@@ -693,7 +949,14 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          404: { description: "Recipe not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          404: {
+            description: "Recipe not found",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
       delete: {
@@ -702,7 +965,12 @@ Authorization: Bearer <your_token>
         description: "Delete own recipe by ID.",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           200: {
@@ -711,13 +979,32 @@ Authorization: Bearer <your_token>
               "application/json": {
                 schema: {
                   type: "object",
-                  properties: { message: { type: "string", example: "Recipe deleted successfully" } },
+                  properties: {
+                    message: {
+                      type: "string",
+                      example: "Recipe deleted successfully",
+                    },
+                  },
                 },
               },
             },
           },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          404: { description: "Recipe not found or not authorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "Recipe not found or not authorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -725,7 +1012,8 @@ Authorization: Bearer <your_token>
       post: {
         tags: ["Recipes"],
         summary: "Create recipe",
-        description: "Create a new recipe. Multipart form-data: `thumb` (image), `title`, `category`, `area`, `instructions`, `description`, `time`, `preview` (optional), `ingredients` (JSON array of {ingredientId, measure}).",
+        description:
+          "Create a new recipe. Multipart form-data: `thumb` (image), `title`, `category`, `area`, `instructions`, `description`, `time`, `preview` (optional), `ingredients` (JSON array of {ingredientId, measure}).",
         security: [{ BearerAuth: [] }],
         requestBody: {
           required: true,
@@ -733,9 +1021,18 @@ Authorization: Bearer <your_token>
             "multipart/form-data": {
               schema: {
                 type: "object",
-                required: ["title", "category", "area", "instructions", "description", "time", "ingredients"],
+                required: [
+                  "thumb",
+                  "title",
+                  "category",
+                  "area",
+                  "instructions",
+                  "description",
+                  "time",
+                  "ingredients",
+                ],
                 properties: {
-                  thumb: { type: "string", format: "binary" },
+                  thumb: { type: "string", format: "binary", description: "Recipe image" },
                   title: { type: "string" },
                   category: { type: "string" },
                   area: { type: "string" },
@@ -767,8 +1064,22 @@ Authorization: Bearer <your_token>
               },
             },
           },
-          400: { description: "Invalid data", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
-          401: { description: "Unauthorized", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          400: {
+            description: "Invalid data",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -830,7 +1141,8 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Areas"],
         summary: "Areas list",
-        description: "Public endpoint. World cuisines (Ukrainian, Italian, etc.).",
+        description:
+          "Public endpoint. World cuisines (Ukrainian, Italian, etc.).",
         responses: {
           200: {
             description: "Areas list",
