@@ -1,8 +1,6 @@
 import UserFavorites from "../db/models/UserFavorites.js";
 import Recipe from "../db/models/Recipe.js";
 import User from "../db/models/User.js";
-import Ingredient from "../db/models/Ingredient.js";
-import RecipeIngredients from "../db/models/RecipeIngredients.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const addToFavorites = async (userId, recipeId) => {
