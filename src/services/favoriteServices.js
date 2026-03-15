@@ -19,11 +19,6 @@ export const addToFavorites = async (userId, recipeId) => {
 };
 
 export const removeFromFavorites = async (userId, recipeId) => {
-  const recipe = await Recipe.findByPk(recipeId);
-  if (!recipe) {
-    throw new HttpError(404, "Recipe not found");
-  }
-
   const deleted = await UserFavorites.destroy({
     where: { userId, recipeId },
   });

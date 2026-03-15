@@ -49,10 +49,6 @@ export const findByUserId = async (ownerId, query = {}) => {
   if (count > 0 && page > totalPages) {
     throw new HttpError(404, "Page not found");
   }
-  
-  if (count === 0) {
-    throw new HttpError(404, "No recipes found for this user");
-  }
 
   return {
     recipes,
@@ -166,10 +162,6 @@ export const searchRecipes = async (query) => {
 
   if (rows.length === 0 && offset > 0) {
     throw new HttpError(404, "Page not found");
-  }
-
-  if (count === 0) {
-    throw new HttpError(404, "No recipes found matching your criteria");
   }
 
   return {
