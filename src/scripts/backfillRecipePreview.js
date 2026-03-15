@@ -32,50 +32,44 @@ const SO_YUMMY_BASE = 'https://ftp.goit.study/img/so-yummy';
 const PREVIEW_PREFIX = `${SO_YUMMY_BASE}/preview/`;
 const PREVIEW_LARGE_PREFIX = `${SO_YUMMY_BASE}/preview/large/`;
 
-function buildLargePreviewFromThumb(thumb) {
-  if (typeof thumb !== 'string') return null;
-  if (!thumb.startsWith(SO_YUMMY_BASE)) return null;
-
-  // thumb example: https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg
-  // preview:       https://ftp.goit.study/img/so-yummy/preview/large/Battenberg%20Cake.jpg
-  if (thumb.startsWith(PREVIEW_LARGE_PREFIX)) return thumb;
-
-  if (thumb.startsWith(PREVIEW_PREFIX)) {
-    return PREVIEW_LARGE_PREFIX + thumb.slice(PREVIEW_PREFIX.length);
-  }
-
-  return null;
-}
-
 async function main() {
   await connectDatabase();
 
   const dryRun = process.argv.includes('--dry-run');
 
-  const recipes = await Recipe.findAll({
-    attributes: ['id', 'thumb', 'preview'],
-  });
+  const dialect = sequelize.getDialect();
+  if (dialect !== 'postgres') {
+    throw new Error(`Unsupported dialect for this script: ${dialect}. Expected 'postgres'.`);
+  }
 
-  let affected = 0;
+  const tableName = Recipe.getTableName();
+  const qTable = typeof tableName === 'string' ? `"${tableName}"` : `"${tableName.tableName}"`;
 
-  for (const r of recipes) {
-    const currentPreview = r.preview;
-    const needsPreview = currentPreview == null || String(currentPreview).trim() === '';
-    if (!needsPreview) continue;
+  const countSql = `
+    SELECT COUNT(*)::int AS affected
+    FROM ${qTable}
+    WHERE ("preview" IS NULL OR BTRIM(COALESCE("preview", '')) = '')
+      AND "thumb" LIKE :thumbLike;
+  `;
 
-    const nextPreview = buildLargePreviewFromThumb(r.thumb);
-    if (!nextPreview) continue;
+  const updateSql = `
+    UPDATE ${qTable}
+    SET "preview" = :largePrefix || SUBSTRING("thumb" FROM :startPos)
+    WHERE ("preview" IS NULL OR BTRIM(COALESCE("preview", '')) = '')
+      AND "thumb" LIKE :thumbLike;
+  `;
 
-    affected += 1;
+  const replacements = {
+    thumbLike: `${PREVIEW_PREFIX}%`,
+    largePrefix: PREVIEW_LARGE_PREFIX,
+    startPos: PREVIEW_PREFIX.length + 1,
+  };
 
-    if (!dryRun) {
-      await Recipe.update(
-        { preview: nextPreview },
-        {
-          where: { id: r.id },
-        }
-      );
-    }
+  const [[countRow]] = await sequelize.query(countSql, { replacements });
+  const affected = Number(countRow?.affected ?? 0);
+
+  if (!dryRun && affected > 0) {
+    await sequelize.query(updateSql, { replacements });
   }
 
   if (!dryRun) {
