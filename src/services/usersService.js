@@ -1,5 +1,6 @@
 import User from "../db/models/User.js";
 import UserFollows from "../db/models/UserFollows.js";
+import Recipe from "../db/models/Recipe.js";
 import sequelize from "../db/sequelize.js";
 import HttpError from "../helpers/HttpError.js";
 import fs from "fs/promises";
@@ -9,6 +10,13 @@ const subscriberFields = ["id", "name", "avatarURL"];
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 100;
+
+const recipePreviewInclude = {
+  model: Recipe,
+  as: "recipes",
+  attributes: ["thumb"],
+  limit: 4,
+};
 
 const normalizePagination = (page, limit) => {
   const p = Math.max(1, parseInt(page, 10) || DEFAULT_PAGE);
@@ -20,8 +28,8 @@ const mapFollowerToResponse = (follower, isFollowing) => ({
   id: follower.id,
   name: follower.name,
   avatarURL: follower.avatarURL,
-  recipesCount: 0, // TODO: replace with Recipe.count per user
-  recipeImageUrls: [], // TODO: up to 4 recipe image URLs for this user
+  recipesCount: follower.getDataValue("recipesCount") || 0,
+  recipeImageUrls: (follower.recipes || []).map((r) => r.thumb).slice(0, 4),
   isFollowing,
 });
 
@@ -46,7 +54,8 @@ export const getSubscribers = async (profileUserId, currentUserId, pagination = 
   const followerIds = followRows.map((r) => r.followerId);
   const followers = await User.findAll({
     where: { id: followerIds },
-    attributes: subscriberFields,
+    attributes: [...subscriberFields, makeRecipesCountAttribute()],
+    include: [recipePreviewInclude],
   });
   const followerMap = new Map(followers.map((f) => [f.id, f]));
 
@@ -86,21 +95,15 @@ export const getFollowing = async (currentUserId, pagination = {}) => {
   const followingIds = followRows.map((r) => r.followingId);
   const following = await User.findAll({
     where: { id: followingIds },
-    attributes: subscriberFields,
+    attributes: [...subscriberFields, makeRecipesCountAttribute()],
+    include: [recipePreviewInclude],
   });
   const followingMap = new Map(following.map((f) => [f.id, f]));
 
   const data = followingIds
     .map((id) => followingMap.get(id))
     .filter(Boolean)
-    .map((u) => ({
-      id: u.id,
-      name: u.name,
-      avatarURL: u.avatarURL,
-      recipesCount: 0, // TODO: replace with Recipe.count per user
-      recipeImageUrls: [], // TODO: up to 4 recipe image URLs for this user
-      isFollowing: true,
-    }));
+    .map((u) => mapFollowerToResponse(u, true));
 
   const totalPages = Math.ceil(total / limit);
   return { data, total, page, limit, totalPages };
@@ -142,6 +145,25 @@ export const updateUserAvatar = async (user, file) => {
 };
 
 const userPublicAttributes = ["name", "email", "avatarURL"];
+
+const makeRecipesCountAttribute = () => [
+  sequelize.literal(`(
+  SELECT COUNT(*)::integer
+  FROM recipes
+  WHERE recipes."owner_id" = "user"."id"
+)`),
+  "recipesCount",
+];
+
+const makeFavoritesCountAttribute = () => [
+  sequelize.literal(`(
+  SELECT COUNT(*)::integer
+  FROM user_favorites
+  WHERE user_favorites."userId" = "user"."id"
+)`),
+  "favoritesCount",
+];
+
 const makeFollowsCountAttribute = (type) => [
   sequelize.literal(`(
   SELECT COUNT(*)::integer
@@ -154,19 +176,33 @@ const makeFollowsCountAttribute = (type) => [
 export const getUserData = async (userId, isCurrentUser) => {
   const attributes = [
     ...userPublicAttributes,
-    // TODO: add user created recipies count here
+    makeRecipesCountAttribute(),
     makeFollowsCountAttribute("followers"),
   ];
 
+  const include = [
+    {
+      model: Recipe,
+      as: "recipes",
+      attributes: ["id", "title", "thumb", "preview", "time"],
+    },
+  ];
+
   if (isCurrentUser) {
-    // add current user fields here
-    // TODO: add user favorite recipies count here
+    attributes.push(makeFavoritesCountAttribute());
     attributes.push(makeFollowsCountAttribute("following"));
+    include.push({
+      model: Recipe,
+      as: "favoriteRecipes",
+      attributes: ["id", "title", "thumb", "preview", "time"],
+      through: { attributes: [] },
+    });
   }
 
   const user = await User.findOne({
     where: { id: userId },
     attributes,
+    include,
   });
 
   if (!user) {
