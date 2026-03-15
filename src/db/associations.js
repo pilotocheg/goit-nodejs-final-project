@@ -23,7 +23,7 @@ User.belongsToMany(User, {
 });
 
 // Recipe owner_id to User id (Many to One)
-User.hasMany(Recipe, {foreignKey: 'owner_id'});
+User.hasMany(Recipe, { foreignKey: "owner_id", as: "recipes" });
 Recipe.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });
 
 
