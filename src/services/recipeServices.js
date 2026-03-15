@@ -30,27 +30,37 @@ export const getRecipeDetailInformation = async (id) => {
   return recipe;
 };
 
-export const findByUserId = async (ownerId) => {
-  const recipes = await Recipe.findAll({
-    where: { owner_id: ownerId },
-    include: [
-      {
-        model: User,
-        as: "owner",
-        attributes: ["id", "name", "avatarURL"],
-      },
-      {
-        model: Ingredient,
-        through: {
-          model: RecipeIngredients,
-          attributes: ["measure"],
-        },
-        attributes: ["id", "name", "img"],
-      },
-    ],
-  });
+export const findByUserId = async (ownerId, query = {}) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const offset = (page - 1) * limit;
 
-  return recipes;
+  const { count, rows: recipes } = await Recipe.findAndCountAll({
+    where: { owner_id: ownerId },
+    attributes: ['id', 'title', 'description', 'thumb'],
+    limit,
+    offset,
+    distinct: true,
+  });
+  
+  console.log(page);
+  const totalPages = Math.ceil(count / limit);
+
+  if (count > 0 && page > totalPages) {
+    throw new HttpError(404, "Page not found");
+  }
+  
+  if (count === 0) {
+    throw new HttpError(404, "No recipes found for this user");
+  }
+
+  return {
+    recipes,
+    total: count,
+    totalPages,
+    currentPage: page,
+    limit: limit,
+  };
 };
 
 export const processThumb = async (file) => {

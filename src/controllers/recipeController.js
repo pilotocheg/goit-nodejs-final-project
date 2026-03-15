@@ -3,7 +3,7 @@ import HttpError from "../helpers/HttpError.js";
 
 export const getOwnRecipes = async (req, res) => {
   const ownerId = req.user.id;
-  const recipes = await recipeService.findByUserId(ownerId);
+  const recipes = await recipeService.findByUserId(ownerId, req.query);
   res.json(recipes);
 };
 
