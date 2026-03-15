@@ -47,17 +47,13 @@ export const getFavorites = async (userId, page = 1, limit = 10) => {
     limit: parsedLimit,
     offset: offset,
     distinct: true,
+    attributes: ['id', 'title', 'description', 'thumb'],
     include: [
       {
         model: User,
         as: "favoritedBy",
         where: { id: userId },
         attributes: [],
-      },
-      { 
-        model: User, 
-        as: "owner", 
-        attributes: ["name", "avatarURL"] 
       }
     ],
   });
