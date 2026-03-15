@@ -6,6 +6,8 @@ import sequelize from "../db/sequelize.js";
 import HttpError from "../helpers/HttpError.js";
 import { Op } from "sequelize";
 import UserFavorites from "../db/models/UserFavorites.js";
+import path from 'path';
+import fs from 'fs/promises';
 
 export const getRecipeDetailInformation = async (id) => {
   const recipe = await Recipe.findByPk(id, {
@@ -189,6 +191,7 @@ export const getPopularRecipes = async () => {
         [Op.in]: topRecipeIds,
       },
     },
+    attributes: ['id', 'title', 'description', 'thumb'],
     include: [
       {
         model: User,
