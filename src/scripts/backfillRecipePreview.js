@@ -11,9 +11,13 @@
  *
  * Usage:
  *   node -r dotenv/config ./src/scripts/backfillRecipePreview.js
- *     -- updates previews in the database
+ *     -- updates previews in the database, uses .env by default
+ *   DOTENV_CONFIG_PATH=.env.prod node -r dotenv/config ./src/scripts/backfillRecipePreview.js
+ *     -- updates previews, uses .env.prod instead of .env
  *   node -r dotenv/config ./src/scripts/backfillRecipePreview.js --dry-run
  *     -- shows how many recipes would be updated, but does not modify data
+ *   DOTENV_CONFIG_PATH=.env.prod node -r dotenv/config ./src/scripts/backfillRecipePreview.js --dry-run
+ *     -- dry-run with .env.prod
  *
  * Safe for repeated runs: only updates recipes with empty/null preview.
  */

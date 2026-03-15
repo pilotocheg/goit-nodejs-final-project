@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize";
 import isTruthy from "../helpers/isTruthy.js";
 
-const nodeEnv = (process.env.NODE_ENV || "development").trim().toLowerCase();
-const defaultSslEnabled = nodeEnv === "production";
+const nodeEnv = (process.env.NODE_ENV || "production").trim().toLowerCase();
+
 const sslEnabled =
   process.env.DB_SSL === undefined
-    ? defaultSslEnabled
+    ? nodeEnv === "production"
     : isTruthy(process.env.DB_SSL);
 
 const rejectUnauthorized =
