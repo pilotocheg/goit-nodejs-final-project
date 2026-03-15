@@ -177,7 +177,7 @@ export const getPopularRecipes = async () => {
     ],
     group: ['recipeId'],
     order: [[sequelize.col('count'), 'DESC']],
-    limit: 10,
+    limit: 4,
     raw: true
   });
 
