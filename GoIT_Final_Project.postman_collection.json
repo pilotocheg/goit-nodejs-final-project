@@ -22,7 +22,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -30,8 +33,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           }
         },
@@ -54,7 +62,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -62,22 +73,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            }
-          }
-        },
-        {
-          "name": "Current User",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/current",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "current"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -86,36 +88,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
-            }
-          }
-        },
-        {
-          "name": "Update Avatar",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "avatar",
-                  "type": "file",
-                  "src": ""
-                }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
               ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/avatars",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "avatars"]
             }
           }
         }
@@ -130,8 +116,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/categories",
-              "host": ["{{baseUrl}}"],
-              "path": ["categories"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
             }
           }
         },
@@ -141,8 +131,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/areas",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "areas"
+              ]
             }
           }
         },
@@ -152,8 +146,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/testimonials",
-              "host": ["{{baseUrl}}"],
-              "path": ["testimonials"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "testimonials"
+              ]
             }
           }
         }
@@ -163,16 +161,46 @@
       "name": "Users",
       "item": [
         {
+          "name": "Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/current",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "current"
+              ]
+            }
+          }
+        },
+        {
           "name": "Get My Following",
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/users/following",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "following"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "following"
+              ]
             }
           }
         },
@@ -181,12 +209,21 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/users/:profileUserId/subscribers",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", ":profileUserId", "subscribers"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ":profileUserId",
+                "subscribers"
+              ],
               "variable": [
                 {
                   "key": "profileUserId",
@@ -202,8 +239,14 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -211,8 +254,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/users/follow",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "follow"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "follow"
+              ]
             }
           }
         },
@@ -221,17 +269,87 @@
           "request": {
             "method": "DELETE",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/users/:targetUserId/follow",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", ":targetUserId", "follow"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ":targetUserId",
+                "follow"
+              ],
               "variable": [
                 {
                   "key": "targetUserId",
                   "value": "",
                   "description": "ID of the user to unfollow"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Avatar",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/avatar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "avatar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "64c8d958249fae54bae90bb9",
+                  "description": "ID of the user to retrieve"
                 }
               ]
             }

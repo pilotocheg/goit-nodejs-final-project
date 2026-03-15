@@ -75,13 +75,17 @@ Authorization: Bearer <your_token>
           name: { type: "string" },
           email: { type: "string", format: "email" },
           avatarURL: { type: "string", nullable: true },
-          followersCount: {
-            type: "integer",
-            description: "Number of followers",
+          recipesCount: { type: "integer" },
+          favoritesCount: { type: "integer" },
+          followersCount: { type: "integer" },
+          followingCount: { type: "integer" },
+          recipes: {
+            type: "array",
+            items: { $ref: "#/components/schemas/RecipePreview" },
           },
-          followingCount: {
-            type: "integer",
-            description: "Number of following",
+          favoriteRecipes: {
+            type: "array",
+            items: { $ref: "#/components/schemas/RecipePreview" },
           },
         },
       },
@@ -91,10 +95,22 @@ Authorization: Bearer <your_token>
           name: { type: "string" },
           email: { type: "string", format: "email" },
           avatarURL: { type: "string", nullable: true },
-          followersCount: {
-            type: "integer",
-            description: "Number of followers",
+          recipesCount: { type: "integer" },
+          followersCount: { type: "integer" },
+          recipes: {
+            type: "array",
+            items: { $ref: "#/components/schemas/RecipePreview" },
           },
+        },
+      },
+      RecipePreview: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          thumb: { type: "string" },
+          preview: { type: "string", nullable: true },
+          time: { type: "integer" },
         },
       },
       Subscriber: {
