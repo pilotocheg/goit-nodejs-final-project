@@ -195,14 +195,6 @@ export const getPopularRecipes = async () => {
         as: "owner",
         attributes: ["id", "name", "avatarURL"],
       },
-      {
-        model: Ingredient,
-        through: {
-          model: RecipeIngredients,
-          attributes: ["measure"],
-        },
-        attributes: ["id", "name", "img"],
-      },
     ],
   });
 
