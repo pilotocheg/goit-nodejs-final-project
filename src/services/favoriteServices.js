@@ -1,8 +1,6 @@
 import UserFavorites from "../db/models/UserFavorites.js";
 import Recipe from "../db/models/Recipe.js";
 import User from "../db/models/User.js";
-import Ingredient from "../db/models/Ingredient.js";
-import RecipeIngredients from "../db/models/RecipeIngredients.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const addToFavorites = async (userId, recipeId) => {
@@ -47,17 +45,13 @@ export const getFavorites = async (userId, page = 1, limit = 10) => {
     limit: parsedLimit,
     offset: offset,
     distinct: true,
+    attributes: ['id', 'title', 'description', 'thumb'],
     include: [
       {
         model: User,
         as: "favoritedBy",
         where: { id: userId },
         attributes: [],
-      },
-      { 
-        model: User, 
-        as: "owner", 
-        attributes: ["name", "avatarURL"] 
       }
     ],
   });
