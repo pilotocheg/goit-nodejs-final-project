@@ -144,7 +144,7 @@ export const updateUserAvatar = async (user, file) => {
   return avatarURL;
 };
 
-const userPublicAttributes = ["name", "email", "avatarURL"];
+const userPublicAttributes = ["id", "name", "email", "avatarURL"];
 
 const makeRecipesCountAttribute = () => [
   sequelize.literal(`(
