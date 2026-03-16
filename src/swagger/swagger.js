@@ -56,6 +56,7 @@ Authorization: Bearer <your_token>
       AuthUser: {
         type: "object",
         properties: {
+          id: { type: "string", example: "640c2dd963a319ea671e37aa" },
           name: { type: "string", example: "John Doe" },
           email: {
             type: "string",
@@ -72,6 +73,7 @@ Authorization: Bearer <your_token>
       CurrentUserProfile: {
         type: "object",
         properties: {
+          id: { type: "string", example: "640c2dd963a319ea671e37aa" },
           name: { type: "string" },
           email: { type: "string", format: "email" },
           avatarURL: { type: "string", nullable: true },
@@ -92,6 +94,7 @@ Authorization: Bearer <your_token>
       UserProfile: {
         type: "object",
         properties: {
+          id: { type: "string", example: "640c2dd963a319ea671e37aa" },
           name: { type: "string" },
           email: { type: "string", format: "email" },
           avatarURL: { type: "string", nullable: true },
@@ -287,6 +290,7 @@ Authorization: Bearer <your_token>
                 },
                 example: {
                   user: {
+                    id: "640c2dd963a319ea671e37aa",
                     name: "John Doe",
                     email: "john@example.com",
                     avatarURL: "https://www.gravatar.com/avatar/...",
@@ -360,6 +364,7 @@ Authorization: Bearer <your_token>
                 example: {
                   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                   user: {
+                    id: "640c2dd963a319ea671e37aa",
                     name: "John Doe",
                     email: "john@example.com",
                     avatarURL: "https://www.gravatar.com/avatar/...",
