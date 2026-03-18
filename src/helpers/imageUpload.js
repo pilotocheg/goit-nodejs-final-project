@@ -2,12 +2,7 @@ import HttpError from "./HttpError.js";
 import cloudinary from "./cloudinary.js";
 
 const useCloudinary = () => {
-  const hasUrl = !!process.env.CLOUDINARY_URL;
-  const hasParts =
-    !!process.env.CLOUDINARY_CLOUD_NAME &&
-    !!process.env.CLOUDINARY_API_KEY &&
-    !!process.env.CLOUDINARY_API_SECRET;
-  return hasUrl || hasParts;
+  return !!process.env.CLOUDINARY_URL;
 };
 
 export async function uploadImageToCloudinary(filePath, { folder, publicId } = {}) {

@@ -13,10 +13,6 @@ const Testimonial = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    // owner_id: {
-    //   type: DataTypes.STRING(24),
-    //   allowNull: false,
-    // },
   },
   { timestamps: false },
 );

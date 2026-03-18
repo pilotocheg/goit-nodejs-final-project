@@ -100,22 +100,14 @@ export const processThumb = async (file) => {
       }),
     ]);
 
-    // cleanup local temp files
-    await fs.unlink(tempThumbPath).catch(() => {});
-    await fs.unlink(tempPreviewPath).catch(() => {});
-    await fs.unlink(file.path).catch(() => {});
-
     return { thumbURL: thumbRes.secure_url, previewURL: previewRes.secure_url };
   } catch (error) {
-    // keep the root cause in server logs
     console.error("processThumb error:", error);
-
-    // cleanup
+    throw new HttpError(500, "Failed to process image");
+  } finally {
     await fs.unlink(tempThumbPath).catch(() => {});
     await fs.unlink(tempPreviewPath).catch(() => {});
     await fs.unlink(file.path).catch(() => {});
-
-    throw new HttpError(500, "Failed to process image");
   }
 };
 
