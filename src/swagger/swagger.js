@@ -56,7 +56,10 @@ Authorization: Bearer <your_token>
       AuthUser: {
         type: "object",
         properties: {
-          id: { type: "string", example: "640c2dd963a319ea671e37aa" },
+          id: {
+            type: "string",
+            example: "640c2dd963a319ea671e37aa",
+          },
           name: { type: "string", example: "John Doe" },
           email: {
             type: "string",
@@ -422,6 +425,14 @@ Authorization: Bearer <your_token>
               },
             },
           },
+          400: {
+            description: "Invalid data",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
           401: {
             description: "Invalid email or password",
             content: {
@@ -578,8 +589,16 @@ Authorization: Bearer <your_token>
             required: true,
             schema: { type: "string" },
           },
-          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          {
+            name: "page",
+            in: "query",
+            schema: { type: "integer", default: 1 },
+          },
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", default: 10 },
+          },
         ],
         responses: {
           200: {
@@ -638,8 +657,16 @@ Authorization: Bearer <your_token>
             required: true,
             schema: { type: "string" },
           },
-          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          {
+            name: "page",
+            in: "query",
+            schema: { type: "integer", default: 1 },
+          },
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", default: 10 },
+          },
         ],
         responses: {
           200: {
@@ -694,7 +721,7 @@ Authorization: Bearer <your_token>
             description: "Follow created (no body)",
           },
           400: {
-            description: "Cannot follow yourself",
+            description: "Cannot follow yourself or invalid data",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Error" },
@@ -769,11 +796,20 @@ Authorization: Bearer <your_token>
       get: {
         tags: ["Users"],
         summary: "Get favorites",
-        description: "Paginated list of recipes added to favorites by the current user.",
+        description:
+          "Paginated list of recipes added to favorites by the current user.",
         security: [{ BearerAuth: [] }],
         parameters: [
-          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          {
+            name: "page",
+            in: "query",
+            schema: { type: "integer", default: 1 },
+          },
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", default: 10 },
+          },
         ],
         responses: {
           200: {
@@ -1133,7 +1169,11 @@ Authorization: Bearer <your_token>
                   "ingredients",
                 ],
                 properties: {
-                  thumb: { type: "string", format: "binary", description: "Recipe image" },
+                  thumb: {
+                    type: "string",
+                    format: "binary",
+                    description: "Recipe image",
+                  },
                   title: { type: "string" },
                   category: { type: "string" },
                   area: { type: "string" },

@@ -68,9 +68,9 @@ In Swagger UI you can:
 
 See **Swagger UI** (`/api-docs`) for full documentation.
 
-**Auth** (`/api/auth`): register, login, logout  
-**Users** (`/api/users`): profile, avatar, following, favorites  
-**Recipes** (`/api/recipes`): own, search, popular, details, create, delete  
+**Auth** (`/api/auth`): `POST /register`, `POST /login`, `POST /logout`  
+**Users** (`/api/users`): `GET /current`, `GET /:userId`, `PATCH /avatar`, subscriptions (paginated) via `GET /:profileUserId/following` and `GET /:profileUserId/subscribers`, follow/unfollow via `PATCH /follow` and `DELETE /:targetUserId/follow`, favorites (paginated) via `GET /favorites` plus `POST /favorites/:recipeId` and `DELETE /favorites/:recipeId`  
+**Recipes** (`/api/recipes`): `GET /own`, `GET /search`, `GET /popular`, `GET /:id`, `POST /`, `DELETE /:id`  
 **Public** (`/api/ingredients`, `/api/categories`, `/api/areas`, `/api/testimonials`)
 
 Protected routes require header: `Authorization: Bearer <token>`.
