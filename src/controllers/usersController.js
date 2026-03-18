@@ -32,8 +32,9 @@ export const getMySubscribers = async (req, res) => {
 };
 
 export const getMyFollowing = async (req, res) => {
+  const { profileUserId } = req.params;
   const { page, limit } = req.query;
-  const result = await getFollowing(req.user.id, { page, limit });
+  const result = await getFollowing(profileUserId, req.user.id, { page, limit });
   res.json(result);
 };
 

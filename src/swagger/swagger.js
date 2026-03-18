@@ -139,6 +139,22 @@ Authorization: Bearer <your_token>
           limit: { type: "integer" },
           totalPages: { type: "integer" },
         },
+        example: {
+          data: [
+            {
+              id: "c7f6b3f1-9c4c-4c3e-9e3b-2b2b2b2b2b2b",
+              name: "Jane Doe",
+              avatarURL: "avatars/jane.jpg",
+              recipesCount: 0,
+              recipeImageUrls: [],
+              isFollowing: false,
+            },
+          ],
+          total: 1,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
       },
       PaginatedFavorites: {
         type: "object",
@@ -151,6 +167,39 @@ Authorization: Bearer <your_token>
           totalPages: { type: "integer" },
           currentPage: { type: "integer" },
           limit: { type: "integer" },
+        },
+        example: {
+          favoriteRecipes: [
+            {
+              id: "8b1a9953c4611296a827abf8c47804d7",
+              title: "Pasta Carbonara",
+              category: "Pasta",
+              area: "Italian",
+              instructions: "Cook pasta. Mix eggs and cheese. Combine.",
+              description: "Classic carbonara with pancetta and parmesan.",
+              thumb: "recipes/1710000000000_thumb.jpg",
+              preview: "recipes/1710000000000_preview.jpg",
+              time: 25,
+              owner_id: "f2b1c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c",
+              owner: {
+                id: "f2b1c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c",
+                name: "Chef Mario",
+                avatarURL: "avatars/mario.jpg",
+              },
+              ingredients: [
+                {
+                  id: "640c2dd963a319ea671e37aa",
+                  name: "Flour",
+                  img: null,
+                  RecipeIngredients: { measure: "100 g" },
+                },
+              ],
+            },
+          ],
+          total: 1,
+          totalPages: 1,
+          currentPage: 1,
+          limit: 10,
         },
       },
       Ingredient: {
@@ -515,13 +564,20 @@ Authorization: Bearer <your_token>
         },
       },
     },
-    "/users/following": {
+    "/users/{profileUserId}/following": {
       get: {
         tags: ["Users"],
-        summary: "My following",
-        description: "Paginated list of users the current user is following.",
+        summary: "Profile following",
+        description:
+          "Paginated list of users that the specified profile user is following. `isFollowing` indicates whether the current (authorized) user follows each of these users.",
         security: [{ BearerAuth: [] }],
         parameters: [
+          {
+            name: "profileUserId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
           { name: "page", in: "query", schema: { type: "integer", default: 1 } },
           { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
         ],
@@ -531,11 +587,35 @@ Authorization: Bearer <your_token>
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/PaginatedSubscribers" },
+                example: {
+                  data: [
+                    {
+                      id: "c7f6b3f1-9c4c-4c3e-9e3b-2b2b2b2b2b2b",
+                      name: "Jane Doe",
+                      avatarURL: "avatars/jane.jpg",
+                      recipesCount: 0,
+                      recipeImageUrls: [],
+                      isFollowing: true,
+                    },
+                  ],
+                  total: 1,
+                  page: 1,
+                  limit: 10,
+                  totalPages: 1,
+                },
               },
             },
           },
           401: {
             description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+          404: {
+            description: "User not found",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Error" },

@@ -75,14 +75,14 @@ export const getSubscribers = async (profileUserId, currentUserId, pagination = 
   return { data, total, page, limit, totalPages };
 };
 
-export const getFollowing = async (currentUserId, pagination = {}) => {
+export const getFollowing = async (profileUserId, currentUserId, pagination = {}) => {
   const { page, limit, offset } = normalizePagination(pagination.page, pagination.limit);
 
-  const userExists = await User.findByPk(currentUserId, { attributes: ["id"] });
-  if (!userExists) throw new HttpError(404, "User not found");
+  const profileExists = await User.findByPk(profileUserId, { attributes: ["id"] });
+  if (!profileExists) throw new HttpError(404, "User not found");
 
   const { count, rows: followRows } = await UserFollows.findAndCountAll({
-    where: { followerId: currentUserId },
+    where: { followerId: profileUserId },
     attributes: ["followingId"],
     limit,
     offset,
@@ -101,10 +101,16 @@ export const getFollowing = async (currentUserId, pagination = {}) => {
   });
   const followingMap = new Map(following.map((f) => [f.id, f]));
 
+  const followRowsCurrent = await UserFollows.findAll({
+    where: { followerId: currentUserId, followingId: followingIds },
+    attributes: ["followingId"],
+  });
+  const currentUserFollowingIds = new Set(followRowsCurrent.map((r) => r.followingId));
+
   const data = followingIds
     .map((id) => followingMap.get(id))
     .filter(Boolean)
-    .map((u) => mapFollowerToResponse(u, true));
+    .map((u) => mapFollowerToResponse(u, currentUserFollowingIds.has(u.id)));
 
   const totalPages = Math.ceil(total / limit);
   return { data, total, page, limit, totalPages };
