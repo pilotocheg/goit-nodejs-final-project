@@ -40,8 +40,14 @@ export const deleteRecipe = async (req, res) => {
 };
 
 export const createRecipe = async (req, res) => {
-  const filePath = await recipeService.processThumb(req.file);
-  const recipeData = { ...req.body, thumb: filePath };
+  const processed = await recipeService.processThumb(req.file);
+
+  const recipeData = {
+    ...req.body,
+    thumb: processed?.thumbURL || "",
+    preview: processed?.previewURL || "",
+  };
+
   const ownerId = req.user.id;
   const recipe = await recipeService.createRecipe(recipeData, ownerId);
   res.status(201).json({

@@ -8,6 +8,10 @@ import { Op } from "sequelize";
 import UserFavorites from "../db/models/UserFavorites.js";
 import path from 'path';
 import fs from 'fs/promises';
+import sharp from "sharp";
+import {
+  uploadImageToCloudinary,
+} from "../helpers/imageUpload.js";
 
 export const getRecipeDetailInformation = async (id) => {
   const recipe = await Recipe.findByPk(id, {
@@ -60,23 +64,58 @@ export const findByUserId = async (ownerId, query = {}) => {
 };
 
 export const processThumb = async (file) => {
-  if (file) {
-    const filename = file.filename;
-    const timestamp = Date.now();
-    const newFilename = `${timestamp}_${filename}`;
-    const tempPath = path.join("temp", filename);
-    const recipesDir = path.join("public", "recipes");
-    const finalPath = path.join(recipesDir, newFilename);
-    const relativeThumbPath = path
-      .join("recipes", newFilename)
-      .replace(/\\/g, "/");
+  if (!file) return null;
 
-    try {
-      await fs.rename(tempPath, finalPath);
-      return relativeThumbPath;
-    } catch (error) {
-      throw new HttpError(500, "Failed to save image");
+  // multer should provide file.path; if not, fail early with clear message
+  if (!file.path) {
+    throw new HttpError(400, "Image file was not uploaded correctly");
+  }
+
+  const baseName = path.parse(file.filename).name;
+  const tempThumbPath = path.join("temp", `${baseName}_thumb.jpg`);
+  const tempPreviewPath = path.join("temp", `${baseName}_preview.jpg`);
+
+  try {
+    await sharp(file.path)
+      .resize(343, 240, { fit: "cover" })
+      .jpeg({ quality: 85 })
+      .toFile(tempThumbPath);
+
+    await sharp(file.path)
+      .resize(615, 462, { fit: "cover" })
+      .jpeg({ quality: 85 })
+      .toFile(tempPreviewPath);
+
+    const useCloud = !!(process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME);
+    if (!useCloud) {
+      throw new HttpError(500, "Cloudinary is not configured (set CLOUDINARY_URL or CLOUDINARY_* env vars)");
     }
+
+    const [thumbRes, previewRes] = await Promise.all([
+      uploadImageToCloudinary(tempThumbPath, {
+        folder: "foodies/recipes/thumb",
+      }),
+      uploadImageToCloudinary(tempPreviewPath, {
+        folder: "foodies/recipes/preview",
+      }),
+    ]);
+
+    // cleanup local temp files
+    await fs.unlink(tempThumbPath).catch(() => {});
+    await fs.unlink(tempPreviewPath).catch(() => {});
+    await fs.unlink(file.path).catch(() => {});
+
+    return { thumbURL: thumbRes.secure_url, previewURL: previewRes.secure_url };
+  } catch (error) {
+    // keep the root cause in server logs
+    console.error("processThumb error:", error);
+
+    // cleanup
+    await fs.unlink(tempThumbPath).catch(() => {});
+    await fs.unlink(tempPreviewPath).catch(() => {});
+    await fs.unlink(file.path).catch(() => {});
+
+    throw new HttpError(500, "Failed to process image");
   }
 };
 

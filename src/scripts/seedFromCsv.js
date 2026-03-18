@@ -132,7 +132,7 @@ async function seed() {
   const testimonials = readCsv("testimonials.csv").map((r) => ({
     id: r.id,
     testimonial: r.testimonial,
-    // owner_id: r.owner_id,
+    owner_id: r.owner_id,
   }));
 
   try {

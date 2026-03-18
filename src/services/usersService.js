@@ -4,7 +4,8 @@ import Recipe from "../db/models/Recipe.js";
 import sequelize from "../db/sequelize.js";
 import HttpError from "../helpers/HttpError.js";
 import fs from "fs/promises";
-import path from "path";
+import sharp from "sharp";
+import { uploadImageToCloudinary } from "../helpers/imageUpload.js";
 
 const subscriberFields = ["id", "name", "avatarURL"];
 const DEFAULT_PAGE = 1;
@@ -133,14 +134,42 @@ export const unfollowUser = async (currentUserId, targetUserId) => {
 
 export const updateUserAvatar = async (user, file) => {
   let avatarURL = null;
+
   if (file) {
-    const newPath = path.resolve("public", "avatars", file.filename);
-    await fs.rename(file.path, newPath);
-    avatarURL = path.join("avatars", file.filename);
+    if (!file.path) {
+      throw new HttpError(400, "Image file was not uploaded correctly");
+    }
+
+    if (!(process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME)) {
+      throw new HttpError(500, "Cloudinary is not configured (set CLOUDINARY_URL or CLOUDINARY_* env vars)");
+    }
+
+    // Make a decent square avatar (256x256)
+    const avatarTempPath = `${file.path}_avatar.jpg`;
+
+    try {
+      await sharp(file.path)
+        .resize(256, 256, { fit: "cover" })
+        .jpeg({ quality: 85 })
+        .toFile(avatarTempPath);
+
+      const uploadRes = await uploadImageToCloudinary(avatarTempPath, {
+        folder: "foodies/avatars",
+        publicId: user.id,
+      });
+
+      avatarURL = uploadRes.secure_url;
+    } catch (error) {
+      console.error("updateUserAvatar error:", error);
+      throw new HttpError(500, "Failed to process image");
+    } finally {
+      // cleanup local temp files
+      await fs.unlink(avatarTempPath).catch(() => {});
+      await fs.unlink(file.path).catch(() => {});
+    }
   }
 
   await user.update({ avatarURL });
-
   return avatarURL;
 };
 
