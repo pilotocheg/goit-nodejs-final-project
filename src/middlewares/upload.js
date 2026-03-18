@@ -18,10 +18,18 @@ const limits = {
 };
 
 const fileFilter = (req, file, cb) => {
-  const extension = file.originalname.split(".").pop();
+  const extension = (file.originalname.split(".").pop() || "").toLowerCase();
+
+  // allow only images
+  if (!file.mimetype || !file.mimetype.startsWith("image/")) {
+    return cb(new HttpError(400, "Only image files are allowed"));
+  }
+
+  // simple extension blacklist
   if (extension === "exe") {
     return cb(new HttpError(400, ".exe files are not allowed"));
   }
+
   cb(null, true);
 };
 
