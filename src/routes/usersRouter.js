@@ -20,8 +20,8 @@ const usersRouter = express.Router();
 
 // private routes
 usersRouter.use(authenticate);
-usersRouter.get("/following", getMyFollowing);
 usersRouter.get("/:profileUserId/subscribers", getMySubscribers);
+usersRouter.get("/:profileUserId/following", getMyFollowing);
 
 usersRouter.get("/favorites", getFavoritesHandler);
 usersRouter.post("/favorites/:recipeId", addToFavoritesHandler);
