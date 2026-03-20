@@ -239,3 +239,35 @@ export const getPopularRecipes = async () => {
     total: recipes.length,
   };
 };
+
+export const findByOwnerId = async (ownerId, query = {}) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const offset = (page - 1) * limit;
+
+  if (page < 1) {
+    throw new HttpError(400, "Page must be greater than 0");
+  }
+
+  const { count, rows: recipes } = await Recipe.findAndCountAll({
+    where: { owner_id: ownerId },
+    attributes: ["id", "title", "description", "thumb"],
+    limit,
+    offset,
+    distinct: true,
+    order: [["title", "ASC"]],
+  });
+
+  const totalPages = Math.ceil(count / limit);
+  if (count > 0 && page > totalPages) {
+    throw new HttpError(404, "Page not found");
+  }
+
+  return {
+    recipes,
+    total: count,
+    totalPages,
+    currentPage: page,
+    limit,
+  };
+};
