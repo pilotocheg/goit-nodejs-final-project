@@ -981,6 +981,90 @@ Authorization: Bearer <your_token>
         },
       },
     },
+    "/recipes/users/{id}": {
+      get: {
+        tags: ["Recipes"],
+        summary: "User recipes",
+        description: "Paginated list of recipes created by a specific user (by user id).",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            description: "User id (owner id)",
+          },
+          {
+            name: "page",
+            in: "query",
+            schema: { type: "integer", default: 1 },
+            description: "Page number",
+          },
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", default: 10 },
+            description: "Items per page",
+          },
+        ],
+        responses: {
+          200: {
+            description: "User's recipes (paginated)",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/Recipe" },
+                    },
+                    total: { type: "integer" },
+                    page: { type: "integer" },
+                    limit: { type: "integer" },
+                    totalPages: { type: "integer" },
+                  },
+                  example: {
+                    data: [
+                      {
+                        id: "8b1a9953c4611296a827abf8c47804d7",
+                        title: "Pasta Carbonara",
+                        category: "Pasta",
+                        area: "Italian",
+                        instructions: "Cook pasta. Mix eggs and cheese. Combine.",
+                        description: "Classic carbonara with pancetta and parmesan.",
+                        thumb: "recipes/1710000000000_thumb.jpg",
+                        preview: "recipes/1710000000000_preview.jpg",
+                        time: 25,
+                        owner_id: "f2b1c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c",
+                        owner: {
+                          id: "f2b1c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c",
+                          name: "Chef Mario",
+                          avatarURL: "avatars/mario.jpg",
+                        },
+                        ingredients: [],
+                      },
+                    ],
+                    total: 1,
+                    page: 1,
+                    limit: 10,
+                    totalPages: 1,
+                  },
+                },
+              },
+            },
+          },
+          404: {
+            description: "User not found or no recipes",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+        },
+      },
+    },
     "/recipes/search": {
       get: {
         tags: ["Recipes"],

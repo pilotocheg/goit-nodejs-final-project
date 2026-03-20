@@ -7,6 +7,13 @@ export const getOwnRecipes = async (req, res) => {
   res.json(recipes);
 };
 
+export const getUserRecipes = async (req, res) => {
+  const { id } = req.params;
+
+  const result = await recipeService.findByOwnerId(id, req.query);
+  res.json(result);
+};
+
 export const searchRecipes = async (req, res) => {
   const result = await recipeService.searchRecipes(req.query);
   res.json(result);
