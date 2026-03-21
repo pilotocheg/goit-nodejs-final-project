@@ -7,8 +7,8 @@ import upload from "../middlewares/upload.js";
 
 const router = express.Router();
 
-router.get("/own", authenticate, getOwnRecipes);  
-router.get("/users/:id", getUserRecipes);
+router.get("/own", authenticate, getOwnRecipes);
+router.get("/users/:id", authenticate, getUserRecipes);
 router.get("/search", searchRecipes);
 router.get("/popular", getPopularRecipes);
 router.get("/:id", getRecipeDetails);

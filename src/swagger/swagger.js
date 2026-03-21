@@ -986,6 +986,7 @@ Authorization: Bearer <your_token>
         tags: ["Recipes"],
         summary: "User recipes",
         description: "Paginated list of recipes created by a specific user (by user id).",
+        security: [{ BearerAuth: [] }],
         parameters: [
           {
             name: "id",
@@ -1051,6 +1052,14 @@ Authorization: Bearer <your_token>
                     totalPages: 1,
                   },
                 },
+              },
+            },
+          },
+          401: {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
               },
             },
           },
